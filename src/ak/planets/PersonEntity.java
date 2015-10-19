@@ -10,7 +10,7 @@ import java.util.EnumMap;
 /**
  * Created by Aleksander on 18/10/2015.
  */
-public class RenderableEntity extends Renderable {
+public class PersonEntity extends Renderable {
 
     protected PApplet main;
     protected PImage texture;
@@ -18,7 +18,7 @@ public class RenderableEntity extends Renderable {
     protected int x, y;
 
 
-    public RenderableEntity(PApplet main){
+    public PersonEntity(PApplet main){
         this.main = main;
     }
 
