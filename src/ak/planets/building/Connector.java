@@ -6,6 +6,7 @@ import processing.core.PApplet;
  * Created by Aleksander on 19/10/2015.
  */
 public class Connector {
+
     private double x;
     private double y;
     private Node parent;
@@ -18,6 +19,7 @@ public class Connector {
         this.parent = parent;
         this.isConnected = true;
         this.connection = connection;
+
     }
 
     public Connector(double x, double y, Node parent) {
@@ -33,6 +35,6 @@ public class Connector {
 
     @Deprecated
     public void render(PApplet main, double x, double y, double scale){
-        main.vertex((float) (this.x * scale + x), (float) (this.y * scale + y));
+        main.ellipse((float) (this.x * scale + x), (float) (this.y * scale + y), 10, 10);
     }
 }

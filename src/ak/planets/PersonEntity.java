@@ -42,6 +42,7 @@ public class PersonEntity extends Renderable {
             for(int index = 0; index < model.length;)
                 main.vertex(x + model[index++], y + model[index++], model[index++], model[index++]);
         main.endShape();
+
     }
 
     @Override

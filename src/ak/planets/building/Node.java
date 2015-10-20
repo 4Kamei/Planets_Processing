@@ -1,11 +1,13 @@
 package ak.planets.building;
 
+import ak.planets.Point;
 import ak.planets.Renderable;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 /**
@@ -18,23 +20,31 @@ public class Node extends Renderable {
     private int[] model;
     private ArrayList<Connector> connections;
     private int maxConnections;
+    private Point p;
 
-    private double x, y;
+    private int x, y;
     private double scale;
     private final int radius = 100;
 
     private ArrayList<Node> attachedBuildings;
 
-    public Node(PApplet main, int y, int x) {
+    public Node(PApplet main, int x, int y, double scale) {
         this.y = y;
         this.x = x;
+        p = new Point(x, y);
         this.main = main;
-        scale = 0.1;
-        add();
+        this.scale = scale;
         this.renderPriority = 2;
         attachedBuildings = new ArrayList<>();
         connections = new ArrayList<>();
-        maxConnections = 0;
+
+        maxConnections = getPossibleConnections((int) (radius*scale), 100);
+        updateConnectionArray(radius, maxConnections, 0);
+
+    }
+
+    public Point getPoint() {
+        return p;
     }
 
     public void remove(Node n){
@@ -50,19 +60,19 @@ public class Node extends Renderable {
 
     public void add(){
         scale += 0.01;
-
-        maxConnections = getPossibleConnections((int) (radius*scale), 80);
+        maxConnections = getPossibleConnections((int) (radius*scale), 100);
         updateConnectionArray(radius, maxConnections, 0);
     }
 
     @Override
     public void setup() {
         this.texture = main.loadImage("res/texture/building/outline.png");
+        System.out.println(texture.width + " : " + texture.height);
         model = new int[]{
-                -radius,  radius, 0, 0,
-                radius,  radius, 1, 0,
-                radius, -radius, 1, 1,
-                -radius, -radius, 0, 1
+                -radius,  radius, 0, 1,
+                radius,  radius, 1, 1,
+                radius, -radius, 1, 0,
+                -radius, -radius, 0, 0
         };
     }
 
@@ -86,7 +96,6 @@ public class Node extends Renderable {
 
     @Override
     public void update() {
-
     }
 
     /**
@@ -107,4 +116,6 @@ public class Node extends Renderable {
     private int getPossibleConnections(int radius, int spacing){
         return (int) Math.PI * radius * 2/spacing;
     }
+
+
 }
