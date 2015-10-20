@@ -36,7 +36,7 @@ public class Map {
         return nodeMap.get(p);
     }
 
-    //TODO: FIX TO USE {@CODE FINAL} Point
+    //TODO: FIX TO USE {@CODE final Point}
     public Node search(final int x, final int y, int max){
         ArrayList<Point> sorted = new ArrayList<>(points);
         sorted.sort((p1, p2) -> Double.compare(p1.computeDistanceSquared(x, y), p2.computeDistanceSquared(x, y)));
