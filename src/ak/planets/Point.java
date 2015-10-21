@@ -34,6 +34,7 @@ public class Point {
         int diff = (dX * dX) + (dY * dY);
         return diff;
     }
+    @Override
     public String toString(){
         return this.x + ", " + this.y;
     }
