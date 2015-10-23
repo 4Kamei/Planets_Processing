@@ -1,5 +1,8 @@
 package ak.planets;
 
+import ak.planets.main.Display;
+import processing.core.PApplet;
+
 /**
  * Created by Aleksander on 20/10/2015.
  */
@@ -34,9 +37,30 @@ public class Point {
         int diff = (dX * dX) + (dY * dY);
         return diff;
     }
+
+    public double computeDistanceSquared(Point p){
+        return p.computeDistanceSquared(this.x, this.y);
+    }
+
+    public int getX(){
+        return x;
+    }
+    public int getY(){
+        return y;
+    }
+
+    @Override
     public String toString(){
         return this.x + ", " + this.y;
     }
 
+    public Point add(Point p){
+        return new Point(x + p.getX(), y + p.getY());
+    }
+
+    public void render(PApplet display) {
+        display.fill(display.color(0, 0, 255));
+        display.ellipse(x, y, 10, 10);
+    }
 }
 

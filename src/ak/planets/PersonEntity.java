@@ -4,8 +4,6 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 
-import java.util.EnumMap;
-
 
 /**
  * Created by Aleksander on 18/10/2015.
@@ -18,12 +16,12 @@ public class PersonEntity extends Renderable {
     protected int x, y;
 
 
-    public PersonEntity(PApplet main){
+    public PersonEntity(PApplet main) {
         this.main = main;
     }
 
 
-    public void setup(){
+    public void setup() {
 
         model = new int[]{
                 20, 20, 0, 0,
@@ -35,12 +33,12 @@ public class PersonEntity extends Renderable {
         texture = main.loadImage("res/texture/icon/icon32.png");
     }
 
-    public void render(){
+    public void render() {
         main.textureMode(PConstants.NORMAL);
         main.beginShape();
-            main.texture(texture);
-            for(int index = 0; index < model.length;)
-                main.vertex(x + model[index++], y + model[index++], model[index++], model[index++]);
+        main.texture(texture);
+        for (int index = 0; index < model.length; )
+            main.vertex(x + model[index++], y + model[index++], model[index++], model[index++]);
         main.endShape();
 
     }

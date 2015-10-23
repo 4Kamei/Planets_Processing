@@ -2,21 +2,23 @@ package ak.planets.main;
 
 import ak.planets.Map;
 import ak.planets.Point;
-import ak.planets.building.Node;
 import ak.planets.RenderQueue;
-import ak.planets.PersonEntity;
+import ak.planets.building.Connection;
+import ak.planets.building.Connector;
+import ak.planets.building.Node;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
+
+import java.util.ArrayList;
 
 /**
  * Created by Aleksander on 18/10/2015.
  */
 public class Display extends PApplet {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         PApplet.main(new String[]{"ak.planets.main.Display"});
-
     }
 
     public void settings() {
@@ -27,26 +29,28 @@ public class Display extends PApplet {
 
     Map map;
     RenderQueue queue;
-    public void setup(){
+
+    public void setup() {
 
         //TODO: BUILDINGS -> CONNECTIONS
 
         map = new Map();
         queue = new RenderQueue();
-        addNode(new Node(this, 400, 300, 0.5));
-        addNode(new Node(this, 400, 400, 0.5));
-        addNode(new Node(this, 400, 200, 0.5));
 
         noStroke();
 
     }
 
-    public void addNode(Node n){
+    public void addNode(Node n) {
         n.setup();
         map.add(n);
         queue.add(n);
     }
 
+    public void delete(Node n){
+        map.remove(n);
+        queue.remove(n);
+    }
 
     public void draw() {
         background(0);
@@ -57,16 +61,44 @@ public class Display extends PApplet {
 
     @Override
     public void keyPressed(KeyEvent event) {
+        System.out.println(event.getKey() + " : " + event.getKeyCode());
         switch (event.getKeyCode()) {
-            case 37:
-                Node n = map.get(new Point(400, 300));
-                n.add();
+            case 65:
+                Node node = new Node(this, new Point(mouseX, mouseY), 0.1);
+                addNode(node);
+                break;
+            case 147:
+                Node del_node = map.search(new Point(mouseX, mouseY), -1);
+                if(del_node != null)
+                    delete(del_node);
+                else
+                    System.out.println("Delnode is null");
+                break;
+            case 82 :
         }
     }
 
     public void mouseWheel(MouseEvent event) {
-        Node n = map.search(mouseX, mouseY, 100);
-        if(n != null)
-            n.add();
+        Node addSize = map.search(new Point(mouseX, mouseY), 100);
+        if(addSize != null)
+            addSize.add();
+    }
+
+    public void mousePressed(MouseEvent event){
+
+        System.out.println(event);
+        Point mouse = new Point(mouseX, mouseY);
+        Node closestNode = map.search(mouse, -1);
+        System.out.println(closestNode + " = closestNode");
+        if(closestNode != null){
+            Connector c = closestNode.getClosestConnection(mouse);
+            if(c == null)
+                return;
+            if(c.getPoint().computeDistanceSquared(mouse) > 200)
+                return;
+            c.getPoint().render(this);
+            c.setConnected(true);
+            System.out.println(c);
+        }
     }
 }

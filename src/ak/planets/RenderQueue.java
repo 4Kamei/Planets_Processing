@@ -21,6 +21,11 @@ public class RenderQueue {
                 (r1, r2) -> Integer.compare(r2.getRenderPriority(), r1.getRenderPriority()));
     }
 
+    public void remove(Renderable r){
+        queue.remove(queue.indexOf(r));
+        queue.sort((r1, r2) -> -1);
+    }
+
     public RenderQueue(){
         queue = new ArrayList<>();
         index = 0;
