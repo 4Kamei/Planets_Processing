@@ -21,8 +21,16 @@ public class Connection extends Renderable{
     private PImage texture;
     private PApplet main;
     private int[] model;
+    private int x, y;
 
     public Connection(PApplet main, Connector connector2, Connector connector1) {
+        if (connector1.getPoint().getX() > connector2.getPoint().getX()){
+            this.x = connector1.getPoint().getX();
+            this.y = connector1.getPoint().getY();
+        }else {
+            this.x = connector2.getPoint().getX();
+            this.y = connector2.getPoint().getY();
+        }
         this.connector2 = connector2;
         this.connector1 = connector1;
         this.length = connector1.getPoint().computeDistanceSquared(connector1.getPoint());
@@ -40,20 +48,30 @@ public class Connection extends Renderable{
 
     @Override
     public void setup() {
-        this.texture = main.loadImage("res/texture/building/outline.png");
+        this.texture = main.loadImage("res/texture/connection/connection.png");
         System.out.println(texture.width + " : " + texture.height);
-        model = new int[]{
-                -texture.width/2, texture.height/2, 0, 1,
-                texture.width/2, texture.height/2, 1, 1,
-                texture.width/2, -texture.height/2, 1, 0,
-                -texture.width/2, -texture.height/2, 0, 0
-        };
     }
 
     @Override
     public void render() {
 
+        main.pushMatrix(); //Save coord system
+
+        main.strokeWeight(10);
+        main.stroke(255);
+        main.beginShape();
+
+        connector1.getPoint().vertex(main);
+        connector2.getPoint().vertex(main);
+        connector1.getPoint().vertex(main);
+
+        main.endShape();
+        main.strokeWeight(1);
+        main.noStroke();
+
+        main.popMatrix(); //Restore coord system
     }
+
 
     @Override
     public void update() {

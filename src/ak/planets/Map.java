@@ -1,6 +1,7 @@
 package ak.planets;
 
 import ak.planets.building.Node;
+import ak.planets.calculation.Point;
 
 import java.util.ArrayList;
 import java.util.HashMap;

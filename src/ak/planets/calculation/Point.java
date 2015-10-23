@@ -1,6 +1,5 @@
-package ak.planets;
+package ak.planets.calculation;
 
-import ak.planets.main.Display;
 import processing.core.PApplet;
 
 /**
@@ -58,10 +57,8 @@ public class Point {
         return new Point(x + p.getX(), y + p.getY());
     }
 
-    @Deprecated
-    public void render(PApplet display) {
-        display.fill(display.color(0, 0, 255));
-        display.ellipse(x, y, 10, 10);
+    public void vertex(PApplet display) {
+        display.vertex(x, y);
     }
 }
 

@@ -1,16 +1,15 @@
 package ak.planets.main;
 
 import ak.planets.Map;
-import ak.planets.Point;
+import ak.planets.calculation.Point;
 import ak.planets.RenderQueue;
+import ak.planets.Renderable;
 import ak.planets.building.Connection;
 import ak.planets.building.Connector;
 import ak.planets.building.Node;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
-
-import java.util.ArrayList;
 
 /**
  * Created by Aleksander on 18/10/2015.
@@ -27,8 +26,9 @@ public class Display extends PApplet {
     }
 
 
-    Map map;
-    RenderQueue queue;
+    private Map map;
+    private RenderQueue queue;
+    private Connector connector;
 
     public void setup() {
 
@@ -41,10 +41,17 @@ public class Display extends PApplet {
 
     }
 
-    public void addNode(Node n) {
+    public void addNode(Renderable n) {
+
         n.setup();
-        map.add(n);
+        if (n instanceof Node)
+            map.add((Node) n);
+        if (n instanceof Connection){
+            Connection add_C = (Connection) n;
+            connector.connect(add_C);
+        }
         queue.add(n);
+        System.out.println("added " + n + " to renderQueue");
     }
 
     public void delete(Node n){
@@ -96,9 +103,15 @@ public class Display extends PApplet {
                 return;
             if(c.getPoint().computeDistanceSquared(mouse) > 200)
                 return;
-            c.getPoint().render(this);
-            c.setConnected(true);
+
             System.out.println(c);
+            if(connector == null){
+                connector = c;
+            }else if(connector != c){
+                Connection connection = new Connection(this, connector, c);
+                addNode(connection);
+                connector = null;
+            }
         }
     }
 }

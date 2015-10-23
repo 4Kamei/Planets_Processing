@@ -1,6 +1,6 @@
 package ak.planets.building;
 
-import ak.planets.Point;
+import ak.planets.calculation.Point;
 import processing.core.PApplet;
 
 /**
@@ -23,10 +23,6 @@ public class Connector {
 
     }
 
-    public Point getPoint(){
-        return new Point((int) x, (int) y).add(parent.getPoint());
-    }
-
     public Connector(double x, double y, Node parent) {
         this.x = x;
         this.y = y;
@@ -34,9 +30,29 @@ public class Connector {
         this.connected = false;
     }
 
+    public void connect(Connection connection){
+        if(!this.connected) {
+            this.connection = connection;
+            this.connected = true;
+            for (Connector connector : connection.getConnectors()) {
+                connector.connect(connection);
+            }
+        }
+    }
+
+    /**
+     * Handling of intersection of buildings.
+     * @param c
+     * @return
+     */
     public boolean canConnect(Connector c) {
         return false;
     }
+
+    public Point getPoint(){
+        return new Point((int) x, (int) y).add(parent.getPoint());
+    }
+
 
     @Deprecated
     public void render(PApplet main, double x, double y, double scale) {

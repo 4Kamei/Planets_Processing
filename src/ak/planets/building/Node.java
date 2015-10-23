@@ -1,6 +1,6 @@
 package ak.planets.building;
 
-import ak.planets.Point;
+import ak.planets.calculation.Point;
 import ak.planets.Renderable;
 import processing.core.PApplet;
 import processing.core.PConstants;
