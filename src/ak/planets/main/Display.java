@@ -22,7 +22,7 @@ public class Display extends PApplet {
 
     public void settings() {
         size(800, 600, P2D);
-        noSmooth();
+        smooth();
     }
 
 
@@ -36,7 +36,6 @@ public class Display extends PApplet {
 
         map = new Map();
         queue = new RenderQueue();
-
         noStroke();
 
     }
@@ -114,4 +113,5 @@ public class Display extends PApplet {
             }
         }
     }
+
 }

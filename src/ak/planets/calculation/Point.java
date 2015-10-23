@@ -44,9 +44,7 @@ public class Point {
     public int getX(){
         return x;
     }
-    public int getY(){
-        return y;
-    }
+    public int getY() { return y; }
 
     @Override
     public String toString(){
@@ -55,6 +53,31 @@ public class Point {
 
     public Point add(Point p){
         return new Point(x + p.getX(), y + p.getY());
+    }
+
+    public Vector sub(Vector v) {
+        return new Vector(x - v.getX(), y - v.getY());
+    }
+    public Vector add(Vector v) {
+        return new Vector(x + v.getX(), y + v.getY());
+    }
+    public Point sub(Point p) { return new Point(x - p.getX(), y - p.getY()); }
+
+    public Point multiply(double scalar){
+        return new Point((int) (scalar * x), (int) (scalar * y));
+    }
+
+    public Point divide(double scalar){
+        return new Point((int) (x / scalar), (int) (y / scalar));
+    }
+
+    public Point getPerpendicular() {
+        return new Point(y ,-x);
+    }
+
+    public Point normalise(){
+        double length = Math.sqrt(x * x + y * y);
+        return new Point((int) (x / length), (int) (y / length));
     }
 
     public void vertex(PApplet display) {
