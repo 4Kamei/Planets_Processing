@@ -28,6 +28,7 @@ public class Node extends Renderable {
     private ArrayList<Node> attachedBuildings;
 
     public Node(PApplet main, Point p, double scale) {
+        this.renderPriority = 20;
         this.p = p;
         this.main = main;
         this.scale = scale;

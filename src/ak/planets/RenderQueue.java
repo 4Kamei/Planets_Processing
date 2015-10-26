@@ -6,7 +6,8 @@ import java.util.ArrayList;
  * Created by Aleksander on 18/10/2015.
  */
 //Terrible implementation of a FIFO queue, but needs sorting after element added
-    //TODO: IMPROVE THIS
+//TODO: THIS NEEDS TO BE A LOT FASTER THAN IT IS - PREFERABLY O(1) FOR next() and hasNext().
+//TODO: IMPROVE THIS
 public class RenderQueue {
     private ArrayList<Renderable> queue;
     private int index;
@@ -18,7 +19,7 @@ public class RenderQueue {
     public void addAndSort(Renderable renderable){
         queue.add(renderable);
         queue.sort(
-                (r1, r2) -> Integer.compare(r2.getRenderPriority(), r1.getRenderPriority()));
+                (r2, r1) -> Integer.compare(r2.getRenderPriority(), r1.getRenderPriority()));
     }
 
     public void remove(Renderable r){

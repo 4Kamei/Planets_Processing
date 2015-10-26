@@ -27,8 +27,9 @@ public class Connection extends Renderable{
     private int x, y;
     private int width;
     private Vector r1, r2, r3, r4;
-    public Connection(PApplet main, Connector connector2, Connector connector1) {
 
+    public Connection(PApplet main, Connector connector2, Connector connector1) {
+        this.renderPriority = 10;
         if (connector1.getPoint().getX() > connector2.getPoint().getX()){
             this.x = connector1.getPoint().getX();
             this.y = connector1.getPoint().getY();
@@ -64,28 +65,14 @@ public class Connection extends Renderable{
 
         Vector perpen = new Vector(con2.sub(con1));
 
-        System.out.println(perpen);
-
-        System.out.println(con1);
-        System.out.println(con2);
-
-
         perpen.makePerpendicular();
-        System.out.println(perpen + " Perpendicular ");
         perpen.normalise();
-        System.out.println(perpen + " Normalised ");
-        perpen.multiply(10);
-        System.out.println(perpen + " After Multiplication ");
+        perpen.multiply(width);
 
         r1 = con1.add(perpen);
         r2 = con2.add(perpen);
         r3 = con2.sub(perpen);
         r4 = con1.sub(perpen);
-
-        System.out.println(r1 + " = r1");
-        System.out.println(r2 + " = r2");
-        System.out.println(r3 + " = r3");
-        System.out.println(r4 + " = r4");
 
         double xLength = Math.sqrt(con1.computeDistanceSquared(con2))/texture.width;
         model = new double[]{
