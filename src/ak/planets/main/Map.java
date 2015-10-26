@@ -1,7 +1,7 @@
-package ak.planets;
+package ak.planets.main;
 
 import ak.planets.building.Node;
-import ak.planets.calculation.Point;
+import ak.planets.calculation.Point2i;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +12,8 @@ import java.util.HashMap;
 
 public class Map {
 
-    HashMap<Point, Node> nodeMap;
-    ArrayList<Point> points;
+    HashMap<Point2i, Node> nodeMap;
+    ArrayList<Point2i> points;
 
     public Map() {
         this.nodeMap = new HashMap<>();
@@ -21,7 +21,7 @@ public class Map {
     }
 
     public boolean add(Node n) {
-        Point p = n.getPoint();
+        Point2i p = n.getPoint();
         if (!points.contains(p)) {
             nodeMap.put(p, n);
             points.add(p);
@@ -32,22 +32,22 @@ public class Map {
     }
 
     public void remove(Node n) {
-        Point p = n.getPoint();
+        Point2i p = n.getPoint();
         nodeMap.remove(p);
         while (points.contains(p))
             points.remove(p);
     }
 
-    public Node get(Point p) {
+    public Node get(Point2i p) {
         System.out.println("Getting " + p + " from nodeMap with hashcode " + p.hashCode() + " \t nodeMap contains " + nodeMap.size() + " values");
         return nodeMap.get(p);
     }
 
     //TODO: FIX TO USE {@CODE final Point}
-    public Node search(final Point p, int max) {
+    public Node search(final Point2i p, int max) {
         if (nodeMap.size() == 0)
             return null;
-        ArrayList<Point> sorted = new ArrayList<>(points);
+        ArrayList<Point2i> sorted = new ArrayList<>(points);
         sorted.sort((p1, p2) -> Double.compare(p1.computeDistanceSquared(p), p2.computeDistanceSquared(p)));
         if (max < 0)
             return nodeMap.get(sorted.get(0));
@@ -56,10 +56,10 @@ public class Map {
         return nodeMap.get(sorted.get(0));
     }
 
-    public ArrayList<Node> sortByDistance(final Point p){
+    public ArrayList<Node> sortByDistance(final Point2i p){
         if (nodeMap.size() == 0)
             return null;
-        ArrayList<Point> sorted = new ArrayList<>(points);
+        ArrayList<Point2i> sorted = new ArrayList<>(points);
         sorted.sort((p1, p2) -> Double.compare(p1.computeDistanceSquared(p), p2.computeDistanceSquared(p)));
         ArrayList<Node> nodeList = new ArrayList<>(sorted.size());
         sorted.stream().forEachOrdered(point -> nodeList.add(nodeMap.get(point)));

@@ -1,7 +1,7 @@
 package ak.planets.building;
 
-import ak.planets.calculation.Point;
-import ak.planets.Renderable;
+import ak.planets.calculation.Point2i;
+import ak.planets.render.Renderable;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
@@ -20,14 +20,14 @@ public class Node extends Renderable {
     private ArrayList<Connector> connections;
     private int maxConnections;
 
-    private Point p;
+    private Point2i p;
 
     private double scale;
     private final int radius = 100;
 
     private ArrayList<Node> attachedBuildings;
 
-    public Node(PApplet main, Point p, double scale) {
+    public Node(PApplet main, Point2i p, double scale) {
         this.renderPriority = 20;
         this.p = p;
         this.main = main;
@@ -41,7 +41,7 @@ public class Node extends Renderable {
 
     }
 
-    public Point getPoint() {
+    public Point2i getPoint() {
         return p;
     }
 
@@ -128,7 +128,7 @@ public class Node extends Renderable {
         return (int) Math.PI * radius * 2 / spacing;
     }
 
-    public Connector getClosestConnection(final Point p){
+    public Connector getClosestConnection(final Point2i p){
 
 
         ArrayList<Connector> con = new ArrayList<>(connections);

@@ -1,5 +1,6 @@
 package ak.planets;
 
+import ak.planets.render.Renderable;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;

@@ -1,4 +1,4 @@
-package ak.planets;
+package ak.planets.render;
 
 /**
  * Created by Aleksander on 18/10/2015.

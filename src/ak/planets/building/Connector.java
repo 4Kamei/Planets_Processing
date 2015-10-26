@@ -1,6 +1,6 @@
 package ak.planets.building;
 
-import ak.planets.calculation.Point;
+import ak.planets.calculation.Point2i;
 import processing.core.PApplet;
 
 /**
@@ -49,8 +49,8 @@ public class Connector {
         return false;
     }
 
-    public Point getPoint(){
-        return new Point((int) x, (int) y).add(parent.getPoint());
+    public Point2i getPoint(){
+        return new Point2i((int) x, (int) y).add(parent.getPoint());
     }
 
 

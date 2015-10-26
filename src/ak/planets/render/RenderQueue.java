@@ -1,4 +1,6 @@
-package ak.planets;
+package ak.planets.render;
+
+import ak.planets.render.Renderable;
 
 import java.util.ArrayList;
 
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 //Terrible implementation of a FIFO queue, but needs sorting after element added
 //TODO: THIS NEEDS TO BE A LOT FASTER THAN IT IS - PREFERABLY O(1) FOR next() and hasNext().
 //TODO: IMPROVE THIS
+
 public class RenderQueue {
     private ArrayList<Renderable> queue;
     private int index;

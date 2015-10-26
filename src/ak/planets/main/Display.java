@@ -1,10 +1,8 @@
 package ak.planets.main;
 
-import ak.planets.Map;
-import ak.planets.Reference;
-import ak.planets.calculation.Point;
-import ak.planets.RenderQueue;
-import ak.planets.Renderable;
+import ak.planets.calculation.Point2i;
+import ak.planets.render.RenderQueue;
+import ak.planets.render.Renderable;
 import ak.planets.building.Connection;
 import ak.planets.building.Connector;
 import ak.planets.building.Node;
@@ -109,11 +107,11 @@ public class Display extends PApplet {
 
             switch (event.getKeyCode()) {
                 case 65:
-                    Node node = new Node(this, new Point(mouseX, mouseY), 0.1);
+                    Node node = new Node(this, new Point2i(mouseX, mouseY), 0.1);
                     add(node);
                     break;
                 case 147:
-                    Node del_node = map.search(new Point(mouseX, mouseY), -1);
+                    Node del_node = map.search(new Point2i(mouseX, mouseY), -1);
                     if (del_node != null)
                         delete(del_node);
                     else
@@ -160,7 +158,7 @@ public class Display extends PApplet {
 
 
     public void mouseWheel(MouseEvent event) {
-        Node addSize = map.search(new Point(mouseX, mouseY), 100);
+        Node addSize = map.search(new Point2i(mouseX, mouseY), 100);
         if(addSize != null)
             addSize.add();
     }
@@ -168,7 +166,7 @@ public class Display extends PApplet {
     public void mousePressed(MouseEvent event) {
         if (gameState == PLAYING) {
             System.out.println(event);
-            Point mouse = new Point(mouseX, mouseY);
+            Point2i mouse = new Point2i(mouseX, mouseY);
             Node closestNode = map.search(mouse, -1);
             System.out.println(closestNode + " = closestNode");
             if (closestNode != null) {

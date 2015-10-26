@@ -1,8 +1,9 @@
 package ak.planets.building;
 
-import ak.planets.Renderable;
-import ak.planets.calculation.Point;
-import ak.planets.calculation.Vector;
+import ak.planets.calculation.Point2d;
+import ak.planets.render.Renderable;
+import ak.planets.calculation.Point2i;
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
@@ -26,7 +27,7 @@ public class Connection extends Renderable{
     private double[] model;
     private int x, y;
     private int width;
-    private Vector r1, r2, r3, r4;
+    private Point2d r1, r2, r3, r4;
 
     public Connection(PApplet main, Connector connector2, Connector connector1) {
         this.renderPriority = 10;
@@ -60,26 +61,38 @@ public class Connection extends Renderable{
         this.texture = main.loadImage("res/texture/connection/connection.png");
         System.out.println(texture.width + " : " + texture.height);
 
-        Point con1 = connector1.getPoint();
-        Point con2 = connector2.getPoint();
+        Point2i con1 = connector1.getPoint();
+        Point2i con2 = connector2.getPoint();
 
-        Vector perpen = new Vector(con2.sub(con1));
 
-        perpen.makePerpendicular();
-        perpen.normalise();
-        perpen.multiply(width);
+        Point2d con1_V = new Point2d(con1);
+        Point2d con2_V = new Point2d(con2);
 
-        r1 = con1.add(perpen);
-        r2 = con2.add(perpen);
-        r3 = con2.sub(perpen);
-        r4 = con1.sub(perpen);
+
+        Point2d calcVector = con2_V.sub(con1_V);
+        calcVector = calcVector.getPerpendicular();
+        calcVector = calcVector.normalise();
+
+        Point2d linearVector = calcVector.getPerpendicular();
+        con1_V = con1_V.sub(linearVector.multiply(1));
+        con2_V = con2_V.add(linearVector.multiply(1));
+
+        calcVector = calcVector.multiply(width);
+
+        System.out.println(calcVector);
+
+        r1 = con1_V.add(calcVector);
+        r2 = con2_V.add(calcVector);
+        r3 = con2_V.sub(calcVector);
+        r4 = con1_V.sub(calcVector);
 
         double xLength = Math.sqrt(con1.computeDistanceSquared(con2))/texture.width;
+
         model = new double[]{
-                r1.getX(), r1.getY(), 0, 1,
-                r2.getX(), r2.getY(), xLength, 1,
-                r3.getX(), r3.getY(), xLength, 0,
-                r4.getX(), r4.getY(), 0, 0,
+                r1.getX(), r1.getY(), 0, 0,
+                r2.getX(), r2.getY(), xLength, 0,
+                r3.getX(), r3.getY(), xLength, 1,
+                r4.getX(), r4.getY(), 0, 1,
         };
     }
 
