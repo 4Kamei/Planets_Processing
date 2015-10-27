@@ -1,6 +1,7 @@
 package ak.planets.building;
 
 import ak.planets.calculation.Point2i;
+import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -70,8 +71,8 @@ public class Node extends Renderable {
     @Override
     public void setup() {
         this.texture = main.loadImage("res/texture/building/outline.png");
-        System.out.println(texture.width + " : " + texture.height);
-        model = new int[]{
+        Logger.log(Logger.LogLevel.DEBUG, "Texture size for connection is " + texture.width + " : " + texture.height);
+                model = new int[]{
                 -radius, radius, 0, 1,
                 radius, radius, 1, 1,
                 radius, -radius, 1, 0,

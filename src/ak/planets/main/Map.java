@@ -2,6 +2,7 @@ package ak.planets.main;
 
 import ak.planets.building.Node;
 import ak.planets.calculation.Point2i;
+import ak.planets.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class Map {
         if (!points.contains(p)) {
             nodeMap.put(p, n);
             points.add(p);
-            System.out.println("Added " + p + " to nodeMap, with hash " + p.hashCode() + " \t nodeMap contains " + nodeMap.size() + " values");
+            Logger.log(Logger.LogLevel.DEBUG, "Added " + p + " to nodeMap, with hash " + p.hashCode() + " \t nodeMap contains " + nodeMap.size() + " values");
             return true;
         }
         return false;
@@ -39,7 +40,7 @@ public class Map {
     }
 
     public Node get(Point2i p) {
-        System.out.println("Getting " + p + " from nodeMap with hashcode " + p.hashCode() + " \t nodeMap contains " + nodeMap.size() + " values");
+        Logger.log(Logger.LogLevel.DEBUG, "Getting " + p + " from nodeMap with hashcode " + p.hashCode() + " \t nodeMap contains " + nodeMap.size() + " values");
         return nodeMap.get(p);
     }
 
@@ -63,6 +64,7 @@ public class Map {
         sorted.sort((p1, p2) -> Double.compare(p1.computeDistanceSquared(p), p2.computeDistanceSquared(p)));
         ArrayList<Node> nodeList = new ArrayList<>(sorted.size());
         sorted.stream().forEachOrdered(point -> nodeList.add(nodeMap.get(point)));
+        Logger.log(Logger.LogLevel.DEBUG, "sortByDistance from " + p + " returned list of " + nodeList.size());
         return nodeList;
     }
 }

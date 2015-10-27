@@ -1,6 +1,7 @@
 package ak.planets.building;
 
 import ak.planets.calculation.Point2d;
+import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
 import ak.planets.calculation.Point2i;
 import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
@@ -59,7 +60,7 @@ public class Connection extends Renderable{
         //Replace with call to the not yet built util class.
         //This should be generated procedurally, based on the textures of the parents nodes.
         this.texture = main.loadImage("res/texture/connection/connection.png");
-        System.out.println(texture.width + " : " + texture.height);
+        Logger.log(Logger.LogLevel.DEBUG, "Texture size for connection is " + texture.width + " : " + texture.height);
 
         Point2i con1 = connector1.getPoint();
         Point2i con2 = connector2.getPoint();
@@ -79,7 +80,7 @@ public class Connection extends Renderable{
 
         calcVector = calcVector.multiply(width);
 
-        System.out.println(calcVector);
+        Logger.log(Logger.LogLevel.DEBUG, "NormalisedVector to P1 and P2 is " + calcVector.toString());
 
         r1 = con1_V.add(calcVector);
         r2 = con2_V.add(calcVector);

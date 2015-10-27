@@ -1,6 +1,7 @@
 package ak.planets.main;
 
 import ak.planets.calculation.Point2i;
+import ak.planets.logger.Logger;
 import ak.planets.render.RenderQueue;
 import ak.planets.render.Renderable;
 import ak.planets.building.Connection;
@@ -12,7 +13,7 @@ import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
 import static ak.planets.main.Display.GameState.*;
-
+import static ak.planets.logger.Logger.LogLevel.*;
 /**
  * Created by Aleksander on 18/10/2015.
  */
@@ -35,9 +36,6 @@ public class Display extends PApplet {
     private Connector connector;
     private Camera camera;
 
-    private boolean goingUp, goingDown, goingLeft, goingRight;
-
-
     public void settings() {
         size(800, 600, P2D);
         smooth();
@@ -48,11 +46,10 @@ public class Display extends PApplet {
         gameState = PLAYING;
 
         camera = new Camera(this);
-
         map = new Map();
         queue = new RenderQueue();
-
         noStroke();
+        Logger.log(ALL, "Game Started");
     }
 
     public void draw() {
@@ -64,9 +61,11 @@ public class Display extends PApplet {
 
         if(gameState == PLAYING || gameState == PAUSED) {
             background(0);
+            camera.update();
             while (queue.hasNext())
                 queue.next().render();
             queue.reset();
+            popMatrix();
         }
     }
 
@@ -92,7 +91,7 @@ public class Display extends PApplet {
             connector.connect(add_C);
         }
         queue.addAndSort(n);
-        System.out.println("added " + n + " to renderQueue");
+        Logger.log(DEBUG, n + " has been added to the RenderQueue");
     }
 
     public void delete(Node n){
@@ -102,32 +101,23 @@ public class Display extends PApplet {
 
 
     public void keyPressed(KeyEvent event) {
-        System.out.println(event.getKey() + " : " + event.getKeyCode());
+        Logger.log(DEBUG, "keyPressed " + event);
         if(gameState == PLAYING){
 
             switch (event.getKeyCode()) {
                 case 65:
-                    Node node = new Node(this, new Point2i(mouseX, mouseY), 0.1);
+                    Node node = new Node(this, camera.getRelativePosition(mouseX, mouseY), 0.1);
                     add(node);
+                    for (int i = 0;i < 40;i++){
+                        node.add();
+                    }
                     break;
                 case 147:
-                    Node del_node = map.search(new Point2i(mouseX, mouseY), -1);
+                    Node del_node = map.search(camera.getRelativePosition(mouseX, mouseY), -1);
                     if (del_node != null)
                         delete(del_node);
                     else
-                        System.out.println("Delnode is null");
-                    break;
-                case 37:
-                    goingLeft = true;
-                    break;
-                case 38:
-                    goingUp = true;
-                    break;
-                case 39:
-                    goingRight = true;
-                    break;
-                case 40:
-                    goingDown = true;
+                        Logger.log(ERROR, "delNode == null");
                     break;
             }
         } else if(gameState == MAIN_MENU){
@@ -137,38 +127,26 @@ public class Display extends PApplet {
             }
         }
     }
-    public void keyReleased(KeyEvent event){
-        if(gameState == PLAYING){
-            switch (event.getKeyCode()){
-                case 37:
-                    goingLeft = false;
-                    break;
-                case 38:
-                    goingUp = false;
-                    break;
-                case 39:
-                    goingRight = false;
-                    break;
-                case 40:
-                    goingDown = false;
-                    break;
-            }
-        }
-    }
-
 
     public void mouseWheel(MouseEvent event) {
-        Node addSize = map.search(new Point2i(mouseX, mouseY), 100);
+        /*
+        Node addSize = map.search(camera.getRelativePosition(mouseX, mouseY), 100);
         if(addSize != null)
             addSize.add();
+        */
+        if(mouseButton == 37){
+            camera.updateZoom(event.getCount() * 0.05);
+        }
     }
 
     public void mousePressed(MouseEvent event) {
         if (gameState == PLAYING) {
-            System.out.println(event);
-            Point2i mouse = new Point2i(mouseX, mouseY);
+            camera.mousePressed(event);
+            Logger.log(DEBUG, "mousePressed" + event);
+            Point2i mouse = camera.getRelativePosition(mouseX, mouseY);
             Node closestNode = map.search(mouse, -1);
-            System.out.println(closestNode + " = closestNode");
+            Logger.log(DEBUG, closestNode + " = closestNode");
+
             if (closestNode != null) {
                 Connector c = closestNode.getClosestConnection(mouse);
                 if (c == null)
@@ -187,5 +165,23 @@ public class Display extends PApplet {
         } else if (gameState == MAIN_MENU) {
 
         }
+    }
+
+    public void mouseReleased(MouseEvent event) {
+        if(gameState == PLAYING){
+            camera.mouseReleased(event);
+        }
+    }
+
+
+    public void mouseMoved(){
+        //Needs to be called on every update to pass mouse coords into camera
+        if(gameState == PLAYING){
+            camera.mouseMoved(mouseX, mouseY);
+        }
+    }
+
+    public void mouseDragged(){
+        this.mouseMoved();
     }
 }

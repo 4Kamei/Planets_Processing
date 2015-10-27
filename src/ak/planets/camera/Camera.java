@@ -1,9 +1,9 @@
 package ak.planets.camera;
 
+import ak.planets.calculation.Point2i;
 import processing.core.PApplet;
+import processing.event.MouseEvent;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 /**
  * Created by Aleksander on 18/10/2015.
@@ -11,7 +11,12 @@ import java.awt.event.MouseListener;
 public class Camera {
 
     private double zoom;
+
     private int x, y;
+    private int lastX, lastY;
+
+    private int mouseX, mouseY;
+
     private PApplet main;
     private boolean middlePressed = false;
 
@@ -24,9 +29,40 @@ public class Camera {
 
     public void update() {
         main.pushMatrix();
-        main.translate(x, y);
+        //main.translate(mouseX, mouseY);
+        main.translate((float) (x), (float) (y));
         main.scale((float) zoom);
     }
 
+    public void mousePressed(MouseEvent event){
+        if(event.getButton() == 3){
+            middlePressed = true;
+            lastX = event.getX();
+            lastY = event.getY();
+        }
+    }
 
+    public void mouseReleased(MouseEvent event){
+        if(event.getButton() == 3){
+            middlePressed = false;
+        }
+    }
+    public void mouseMoved(int mouseX, int mouseY){
+        if(middlePressed){
+            x += mouseX - lastX;
+            y += mouseY - lastY;
+            lastX = mouseX;
+            lastY = mouseY;
+        }
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
+    }
+
+    public Point2i getRelativePosition(int x, int y){
+        return new Point2i((int) ((x - this.x)/zoom), (int) ((y - this.y)/zoom));
+    }
+
+    public void updateZoom(double v) {
+        //this.zoom += v;
+    }
 }
