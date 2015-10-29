@@ -1,5 +1,6 @@
 package ak.planets.main;
 
+import ak.planets.background.Background;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
 import ak.planets.render.RenderQueue;
@@ -11,6 +12,8 @@ import ak.planets.camera.Camera;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
+
+import java.awt.*;
 
 import static ak.planets.main.Display.GameState.*;
 import static ak.planets.logger.Logger.LogLevel.*;
@@ -35,25 +38,34 @@ public class Display extends PApplet {
     private RenderQueue queue;
     private Connector connector;
     private Camera camera;
-
+    private Background background;
     public void settings() {
-        size(800, 600, P2D);
+        size(1920, 1080, P2D);
         smooth();
     }
 
     public void setup() {
         surface.setTitle(Reference.gameName);
+
+        //This needs to work, anytime now would be good
+        frame.setIconImage(Toolkit.getDefaultToolkit().getImage("res/texture/icon/planet.ico"));
+
         gameState = PLAYING;
 
         camera = new Camera(this);
         map = new Map();
         queue = new RenderQueue();
+
+        background = new Background(this, camera);
+
+
         noStroke();
         Logger.log(ALL, "Game Started");
+
+        add(background);
     }
 
     public void draw() {
-        update();
 
         if(gameState == MAIN_MENU){
             mainMenu();
@@ -65,22 +77,14 @@ public class Display extends PApplet {
             while (queue.hasNext())
                 queue.next().render();
             queue.reset();
-            popMatrix();
+            popMatrix();    //restore coord system
         }
     }
 
     public void mainMenu(){
         background(0);
-
     }
 
-    public void update(){
-        if(gameState == PLAYING){
-
-        }
-    }
-
-    
     public void add(Renderable n) {
 
         n.setup();
@@ -91,9 +95,7 @@ public class Display extends PApplet {
             connector.connect(add_C);
         }
         queue.addAndSort(n);
-        Logger.log(DEBUG, n + " has been added to the RenderQueue");
     }
-
     public void delete(Node n){
         map.remove(n);
         queue.remove(n);
@@ -101,7 +103,7 @@ public class Display extends PApplet {
 
 
     public void keyPressed(KeyEvent event) {
-        Logger.log(DEBUG, "keyPressed " + event);
+        Logger.log(DEBUG, "keyPressed " + event.getKeyCode());
         if(gameState == PLAYING){
 
             switch (event.getKeyCode()) {
@@ -111,6 +113,9 @@ public class Display extends PApplet {
                     for (int i = 0;i < 40;i++){
                         node.add();
                     }
+                    break;
+                case 88:
+                    background.toggleHidden();
                     break;
                 case 147:
                     Node del_node = map.search(camera.getRelativePosition(mouseX, mouseY), -1);

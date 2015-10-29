@@ -1,5 +1,6 @@
 package ak.planets.camera;
 
+import ak.planets.calculation.Point2d;
 import ak.planets.calculation.Point2i;
 import processing.core.PApplet;
 import processing.event.MouseEvent;
@@ -60,6 +61,10 @@ public class Camera {
 
     public Point2i getRelativePosition(int x, int y){
         return new Point2i((int) ((x - this.x)/zoom), (int) ((y - this.y)/zoom));
+    }
+
+    public Point2i getPosition(){
+        return new Point2i(this.x, this.y);
     }
 
     public void updateZoom(double v) {

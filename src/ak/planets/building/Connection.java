@@ -9,6 +9,8 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 
+import java.util.Arrays;
+
 /**
  * Created by Aleksander on 19/10/2015.
  */
@@ -99,8 +101,6 @@ public class Connection extends Renderable{
 
     @Override
     public void render() {
-
-
         main.beginShape();
         main.textureWrap(PConstants.REPEAT);
         main.texture(texture);
@@ -125,5 +125,26 @@ public class Connection extends Renderable{
     @Override
     public void update() {
 
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ak.planets.building.Connection{");
+        sb.append("connector1=").append(connector1);
+        sb.append(", connector2=").append(connector2);
+        sb.append(", length=").append(length);
+        sb.append(", main=").append(main);
+        sb.append(", model=").append(Arrays.toString(model));
+        sb.append(", r1=").append(r1);
+        sb.append(", r2=").append(r2);
+        sb.append(", r3=").append(r3);
+        sb.append(", r4=").append(r4);
+        sb.append(", texture=").append(texture);
+        sb.append(", type=").append(type);
+        sb.append(", width=").append(width);
+        sb.append(", x=").append(x);
+        sb.append(", y=").append(y);
+        sb.append('}');
+        return sb.toString();
     }
 }

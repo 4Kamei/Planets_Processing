@@ -33,7 +33,6 @@ public class Node extends Renderable {
         this.p = p;
         this.main = main;
         this.scale = scale;
-        this.renderPriority = 2;
         attachedBuildings = new ArrayList<>();
         connections = new ArrayList<>();
 

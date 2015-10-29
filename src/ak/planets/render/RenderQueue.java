@@ -1,8 +1,11 @@
 package ak.planets.render;
 
+import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
 
 import java.util.ArrayList;
+
+import static ak.planets.logger.Logger.LogLevel.DEBUG;
 
 /**
  * Created by Aleksander on 18/10/2015.
@@ -20,9 +23,12 @@ public class RenderQueue {
     }
 
     public void addAndSort(Renderable renderable){
+        Logger.log(DEBUG, renderable + " has been added to the RenderQueue");
         queue.add(renderable);
+        //Sort in decending order (large numbers rendered first)
         queue.sort(
-                (r2, r1) -> Integer.compare(r2.getRenderPriority(), r1.getRenderPriority()));
+                (r2, r1) -> Integer.compare(r1.getRenderPriority(), r2.getRenderPriority()));
+        Logger.log(DEBUG, "renderQueue now contains " + queue.size() + " items");
     }
 
     public void remove(Renderable r){
@@ -36,7 +42,9 @@ public class RenderQueue {
     }
 
     public Renderable next(){
-        return queue.get(index++);
+        Renderable r = queue.get(index++);
+        //Logger.log(Logger.LogLevel.DEBUG, r.getRenderPriority() + " : " + r);
+        return r;
     }
 
     public boolean hasNext(){
