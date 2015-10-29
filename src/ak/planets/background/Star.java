@@ -1,6 +1,5 @@
 package ak.planets.background;
 
-import ak.planets.calculation.Point2d;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
@@ -15,18 +14,17 @@ public class Star extends Renderable{
     private Point2i cameraPosition;
     private int[] model;
     private double scale;
-    private Background background;
+    private BackgroundOld background;
     private PApplet main;
     private int z;
 
-    public Star(Point2i position, Background background, PApplet main, int z){
+    public Star(Point2i position, BackgroundOld background, PApplet main, int z){
         this.position = position;
         this.background = background;
         this.main = main;
         this.renderPriority = 40;
         this.scale = 1;
         this.z = z;
-
     }
 
     @Override

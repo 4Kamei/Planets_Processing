@@ -3,8 +3,10 @@ package ak.planets.logger;
 import ak.planets.main.Reference;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by Aleksander on 27/10/2015.
@@ -27,8 +29,10 @@ public class Logger {
         }
     }
 
-    public static void log(LogLevel level, String message){
+    public static void log(LogLevel level, String message, Object... x){
         Date now = new Date();
-        out.printf("[%tD %tT][" + name + "][" + level.name + "] : " + message + "\n", now, now);
+
+        String s = String.format("[%tD %tT][" + name + "][" + level.name + "] : " + message.replace("%", "@@@~~~@@@}}{{£") + "%n", now, now);
+        out.printf(s.replace("@@@~~~@@@}}{{£", "%"), x);
     }
 }

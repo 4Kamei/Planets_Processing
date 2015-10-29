@@ -1,6 +1,7 @@
 package ak.planets.main;
 
 import ak.planets.background.Background;
+import ak.planets.background.BackgroundOld;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
 import ak.planets.render.RenderQueue;
@@ -40,7 +41,7 @@ public class Display extends PApplet {
     private Camera camera;
     private Background background;
     public void settings() {
-        size(1920, 1080, P2D);
+        size(800, 600, P2D);
         smooth();
     }
 

@@ -1,9 +1,7 @@
 package ak.planets.background;
 
-import ak.planets.calculation.Point2d;
 import ak.planets.calculation.Point2i;
 import ak.planets.camera.Camera;
-import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -14,48 +12,31 @@ import java.util.ArrayList;
  * Created by Aleksander on 26/10/2015.
  */
 public class Background extends Renderable{
-    private PImage starTexture;
     private PApplet main;
-    private ArrayList<Star> stars;
+    private ArrayList<BackgroundLayer> layers;
     private boolean hidden = false;
     private Camera camera;
 
     public Background(PApplet main, Camera camera) {
         this.renderPriority = 30;
-        stars = new ArrayList<>();
+        layers = new ArrayList<>();
         this.main = main;
-        this.starTexture = main.loadImage("res/texture/background/star.png");
         this.camera = camera;
     }
 
-    public void addStar(Point2i point2i, int z){
-        Star s = new Star(point2i , this, main, z);
-        s.setup();
-        stars.add(s);
-    }
-    public PImage getStarTexture(){
-        return starTexture;
-    }
-    //TODO: GENERATE MAP + USE main.cameraX + main.cameraY for the parallax
-
     @Override
     public void setup() {
-
-        for (int x = 0; x < main.width; x++) {
-            for (int y = 0; y < main.height; y++) {
-                if (Math.random() > 0.9999)
-                    addStar(new Point2i(x, y), (int) (Math.random() * 4)+3);
-            }
-        }
-
+            BackgroundLayer layer = new BackgroundLayer(main.width, main.height, 0, new Point2i(0, 0), main, this);
+            layer.setup();
+            layers.add(layer);
     }
 
     @Override
     public void render(){
 
-        stars.forEach(star -> star.setCameraPosition(camera.getPosition()));
+        layers.forEach(layer -> layer.updateCameraPosition(camera.getPosition()));
         if (!hidden)
-            stars.forEach(Star::render);
+            layers.forEach(BackgroundLayer::render);
     }
 
     @Override
