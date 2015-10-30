@@ -15,16 +15,13 @@ import java.util.ArrayList;
  */
 public class BackgroundLayerFactory {
 
-    private int width, height;
     private PImage texture;
 
     public BackgroundLayerFactory(int width, int height) {
-        this.width = width;
-        this.height = height;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = image.createGraphics();
 
-        graphics.setPaint (new Color(0, 0, 0, 0));
+        graphics.setPaint (new Color(255, 0, 0, 0));
         graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
         texture = new PImage(image);
     }
