@@ -73,6 +73,7 @@ public class Display extends PApplet {
         }
 
         if(gameState == PLAYING || gameState == PAUSED) {
+            surface.setTitle(Reference.gameName + " : " + frameRate);
             background(0);
             camera.update();
             while (queue.hasNext())

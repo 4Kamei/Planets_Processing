@@ -1,5 +1,6 @@
 package ak.planets.background;
 
+import ak.planets.calculation.Point2d;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
@@ -24,10 +25,9 @@ public class BackgroundLayer extends Renderable{
     private PApplet main;
     private int z;
     private HashMap<Point2i, PImage> tiles;
+    private ArrayList<Point2i> keySet;
     private int[] positions = new int[]{
-            -1, -1, 0, -1, 1, -1,
-            -1,  0, 0,  0, 1,  0,
-            -1,  1, 0,  1, 1,  1
+        0,0
     };
     private boolean render;
 
@@ -39,6 +39,7 @@ public class BackgroundLayer extends Renderable{
         this.main = main;
         this.background = background;
         this.tiles = new HashMap<>();
+        this.keySet = new ArrayList<>();
         cameraPosition = new Point2i(0, 0);
         Logger.log(Logger.LogLevel.DEBUG, this.toString());
     }
@@ -56,11 +57,8 @@ public class BackgroundLayer extends Renderable{
         return sb.toString();
     }
 
-    public void updateCameraPosition(Point2i p){
-        cameraPosition = p;
-    }
     private void addImage(int tileX, int tileY){
-        Logger.log(Logger.LogLevel.DEBUG, "Adding tile %d, %d, to render", tileX, tileY);
+        Logger.log(Logger.LogLevel.DEBUG, "Adding tile %d, %d, to %s", tileX, tileY, this);
 
         Thread t = new Thread(() -> {
             BackgroundLayerFactory factory = new BackgroundLayerFactory(elementWidth, elementHeight);
@@ -70,7 +68,7 @@ public class BackgroundLayer extends Renderable{
                         try {
                             if (!factory.addStar(x, y, (Math.random()/2)))
                                 //Logger.log(Logger.LogLevel.DEBUG, this + " : Star added at %d, %d", x, y);
-                                Logger.log(Logger.LogLevel.ERROR, this + " : Star can't be added at %d, %d ", x, y);
+                                Logger.log(Logger.LogLevel.ERROR,"%s : Star can't be added at %d, %d ", this, x, y);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -79,32 +77,39 @@ public class BackgroundLayer extends Renderable{
             }
             this.addImage(tileX, tileY, factory.getTexture());
         });
+        t.setName(String.format("BL textureGen for BL{%d, %d, z = %d,}", tileX, tileY, z));
         t.start();
     }
 
     private void addImage(int tileX, int tileY, PImage image){
         stopRender();
         tiles.put(new Point2i(tileX, tileY), image);
+        keySet.add(new Point2i(tileX, tileY));
         startRender();
     }
 
-    private boolean isVisible(Point2i point){
+    private boolean isVisible(Point2i calc){
+        Point2i point = new Point2i(calc.getX()/elementWidth, calc.getY()/elementHeight);
         int tilePosX = cameraPosition.getX()/elementWidth;
         int tilePosY = cameraPosition.getY()/elementHeight;
         for (int i = 0; i < positions.length;) {
-            if(point == new Point2i(tilePosX + positions[i++], tilePosY + positions[i++]))
-                return true;
+            Point2i check = new Point2i(tilePosX + positions[i++], tilePosY + positions[i++]);
+            check = check.multiply(-1);
+            if(point.equals(check))
+                return false;
         }
-        //Logger.log(Logger.LogLevel.DEBUG, point + " removed from visible list");
-        return false;
+        Logger.log(Logger.LogLevel.DEBUG, "Removed %s as it is not between -1 and +1 for x and y of Point2i{%d, %d}", point, tilePosX, tilePosY);
+        return true;
     }
 
     private void stopRender(){
         render = false;
     }
+
     private void startRender(){
         render = true;
     }
+
     @Override
     public void setup() {
         model = new int[]{
@@ -114,30 +119,62 @@ public class BackgroundLayer extends Renderable{
                 0           , elementHeight, 0, 1
         };
 
-        addImage(-1, 0);
+        addImage( 0, 0);
+        addImage( 0, 1);
+        addImage( 0, 2);
+        addImage( 0, 3);
+        addImage( 0, 4);
+        addImage( 0, -1);
+        addImage( 0, -2);
+        addImage( 0, -3);
+        addImage( 0, -4);
+        addImage( 1,  0);
+        addImage( 2,  0);
+        addImage( 3,  0);
+        addImage( 4,  0);
+        addImage(-1,  0);
+        addImage(-2,  0);
+        addImage(-3,  0);
+        addImage(-4,  0);
+
     }
 
     @Override
     public void render() {
         if(render) {
-            ArrayList<Point2i> visibleTiles = new ArrayList<>(tiles.keySet());
-            visibleTiles.removeIf(this::isVisible);
+            cameraPosition = background.getCameraPosition();
+            ArrayList<Point2i> visibleTiles = new ArrayList<>(keySet);
+            Point2i camera = cameraPosition.multiply(-1).add(cameraPosition.divide(z));
+
+            //FIXME: Visibility of background later tile depends on finalPosition, after the camera has been added.
+            //FIXME: To stop addition to every tile, divide camera first by elementWidth and Height then check.
+            //FIXME:  Make sure to center the visible tile using +-1.5 elementSize
             for (Point2i visibleTile : visibleTiles) {
-                cameraPosition = cameraPosition.multiply(-1).add(cameraPosition.divide(z));
-                visibleTile = new Point2i(visibleTile.getX() * main.width, visibleTile.getY() * main.height);
-                Logger.log(Logger.LogLevel.DEBUG, visibleTile.toString());
+
+
+                visibleTile = new Point2i(visibleTile.getX() * elementWidth, visibleTile.getY() * elementHeight);
+                //Logger.log(Logger.LogLevel.DEBUG, visibleTile.toString());
+
+                Point2i finalPos = position.add(visibleTile).add(camera);
+
+                if(isVisible(finalPos))
+                    main.fill(128);
+                else
+                    main.fill(255);
+
                 main.beginShape();
 
                 main.texture(tiles.get(visibleTile));
 
                 for (int index = 0; index < model.length; ) {
                     main.vertex(
-                            (float) (model[index++] / z + position.getX() + visibleTile.getX() + cameraPosition.getX()),
-                            (float) (model[index++] / z + position.getY() + visibleTile.getY() + cameraPosition.getY()),
+                            (float) (model[index++] + finalPos.getX()),
+                            (float) (model[index++] + finalPos.getY()),
                             model[index++],
                             model[index++]);
                 }
                 main.endShape();
+                main.noFill();
             }
         }
     }
