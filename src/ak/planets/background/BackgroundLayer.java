@@ -24,10 +24,18 @@ public class BackgroundLayer extends Renderable{
     private Background background;
     private PApplet main;
     private int z;
-    private HashMap<Point2i, PImage> tiles;
+    private volatile HashMap<Point2i, PImage> tiles;
     private ArrayList<Point2i> keySet;
     private int[] positions = new int[]{
-        0,0
+            1, -1,
+            1,  0,
+            1,  1,
+            0,  1,
+            0,  0,
+            0, -1,
+            1,  1,
+            1,  0,
+            1, -1
     };
     private boolean render;
 
@@ -83,18 +91,24 @@ public class BackgroundLayer extends Renderable{
 
     private void addImage(int tileX, int tileY, PImage image){
         stopRender();
+
         tiles.put(new Point2i(tileX, tileY), image);
         keySet.add(new Point2i(tileX, tileY));
+
         startRender();
     }
 
-    private boolean isVisible(Point2i calc){
-        Point2i point = new Point2i(calc.getX()/elementWidth, calc.getY()/elementHeight);
-        int tilePosX = cameraPosition.getX()/elementWidth;
-        int tilePosY = cameraPosition.getY()/elementHeight;
+    private boolean isVisible(Point2i point){
+        double dtilePosX = cameraPosition.getX()/(float) elementWidth;
+
+        double dtilePosY = cameraPosition.getY()/(float) elementHeight;
+
+        int tilePosX = (int) Math.floor(dtilePosX);
+
+        int tilePosY = (int) Math.floor(dtilePosY);
+
         for (int i = 0; i < positions.length;) {
             Point2i check = new Point2i(tilePosX + positions[i++], tilePosY + positions[i++]);
-            check = check.multiply(-1);
             if(point.equals(check))
                 return false;
         }
@@ -145,25 +159,22 @@ public class BackgroundLayer extends Renderable{
             cameraPosition = background.getCameraPosition();
             ArrayList<Point2i> visibleTiles = new ArrayList<>(keySet);
             Point2i camera = cameraPosition.multiply(-1).add(cameraPosition.divide(z));
+            cameraPosition = camera;
+            visibleTiles.removeIf(this::isVisible);
 
             //FIXME: Visibility of background later tile depends on finalPosition, after the camera has been added.
             //FIXME: To stop addition to every tile, divide camera first by elementWidth and Height then check.
             //FIXME:  Make sure to center the visible tile using +-1.5 elementSize
             for (Point2i visibleTile : visibleTiles) {
 
-
-                visibleTile = new Point2i(visibleTile.getX() * elementWidth, visibleTile.getY() * elementHeight);
                 //Logger.log(Logger.LogLevel.DEBUG, visibleTile.toString());
 
-                Point2i finalPos = position.add(visibleTile).add(camera);
+                Point2i tilePosition = new Point2i(visibleTile.getX() * elementWidth,visibleTile.getY()*elementHeight);
 
-                if(isVisible(finalPos))
-                    main.fill(128);
-                else
-                    main.fill(255);
+                Point2i finalPos = position.add(tilePosition).add(camera);
 
                 main.beginShape();
-
+                main.fill(255);
                 main.texture(tiles.get(visibleTile));
 
                 for (int index = 0; index < model.length; ) {
@@ -174,8 +185,12 @@ public class BackgroundLayer extends Renderable{
                             model[index++]);
                 }
                 main.endShape();
+                main.fill(128);
+                main.text(String.format("tile at %d, %d", visibleTile.getX(), visibleTile.getY()), finalPos.getX(), finalPos.getY());
                 main.noFill();
             }
+
+            main.text(String.format("Camera Position %s", cameraPosition), cameraPosition.getX(), cameraPosition.getY());
         }
     }
 
