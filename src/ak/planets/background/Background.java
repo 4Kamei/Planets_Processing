@@ -26,14 +26,14 @@ public class Background extends Renderable{
 
     @Override
     public void setup() {
-        BackgroundLayer layer = new BackgroundLayer(main.width/2, main.height/2, 1, new Point2i(0, 0), main, this);
+        BackgroundLayer layer = new BackgroundLayer(main.width, main.height, 1, new Point2i(0, 0), main, this);
         layer.setup();
         layers.add(layer);
 
         //Generate background 2
-        //layer = new BackgroundLayer(main.width, main.height, 2, new Point2i(0, 0), main, this);
-        //layer.setup();
-        //layers.add(layer);
+        layer = new BackgroundLayer(main.width, main.height, 2, new Point2i(0, 0), main, this);
+        layer.setup();
+        layers.add(layer);
     }
 
     @Override
