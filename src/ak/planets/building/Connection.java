@@ -20,30 +20,23 @@ public class Connection extends Renderable{
 
 
     public static int CONNECTION_NORMAL = 1;
-
-
-    private Connector connector1, connector2;
+    private Point2i point1, point2;
     private int type;
     private double length;
     private PImage texture;
     private PApplet main;
     private double[] model;
-    private int x, y;
     private int width;
     private Point2d r1, r2, r3, r4;
 
-    public Connection(PApplet main, Connector connector2, Connector connector1) {
+    public Connection(PApplet main, Point2i point1, Point2i point2) {
+
+        this.point1 = point1;
+        this.point2 = point2;
+
         this.renderPriority = 10;
-        if (connector1.getPoint().getX() > connector2.getPoint().getX()){
-            this.x = connector1.getPoint().getX();
-            this.y = connector1.getPoint().getY();
-        }else {
-            this.x = connector2.getPoint().getX();
-            this.y = connector2.getPoint().getY();
-        }
-        this.connector2 = connector2;
-        this.connector1 = connector1;
-        this.length = connector1.getPoint().computeDistanceSquared(connector1.getPoint());
+
+        this.length = node1.getPoint().computeDistanceSquared(node2.getPoint());
         this.length = Math.sqrt(length);
         this.type = CONNECTION_NORMAL;
         this.main = main;
@@ -53,8 +46,9 @@ public class Connection extends Renderable{
     /**
      * @return {@code Array} containing 2 {@code Connector}
      */
-    public Connector[] getConnectors() {
-        return new Connector[]{connector1, connector2};
+
+    public Node[] getNodes(){
+        return new Node[]{node1, node2};
     }
 
     @Override
@@ -64,9 +58,8 @@ public class Connection extends Renderable{
         this.texture = main.loadImage("res/texture/connection/connection.png");
         Logger.log(Logger.LogLevel.DEBUG, "Texture size for connection is " + texture.width + " : " + texture.height);
 
-        Point2i con1 = connector1.getPoint();
-        Point2i con2 = connector2.getPoint();
-
+        Point2i con1 = node1.getPoint();
+        Point2i con2 = node2.getPoint();
 
         Point2d con1_V = new Point2d(con1);
         Point2d con2_V = new Point2d(con2);
@@ -130,8 +123,8 @@ public class Connection extends Renderable{
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ak.planets.building.Connection{");
-        sb.append("connector1=").append(connector1);
-        sb.append(", connector2=").append(connector2);
+        sb.append("connector1=").append(node1);
+        sb.append(", connector2=").append(node2);
         sb.append(", length=").append(length);
         sb.append(", main=").append(main);
         sb.append(", model=").append(Arrays.toString(model));
@@ -142,8 +135,6 @@ public class Connection extends Renderable{
         sb.append(", texture=").append(texture);
         sb.append(", type=").append(type);
         sb.append(", width=").append(width);
-        sb.append(", x=").append(x);
-        sb.append(", y=").append(y);
         sb.append('}');
         return sb.toString();
     }

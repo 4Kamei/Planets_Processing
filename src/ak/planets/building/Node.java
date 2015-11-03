@@ -1,5 +1,6 @@
 package ak.planets.building;
 
+import ak.planets.calculation.Point2d;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
@@ -37,7 +38,6 @@ public class Node extends Renderable {
         connections = new ArrayList<>();
 
         maxConnections = getPossibleConnections((int) (radius * scale), 100);
-        updateConnectionArray(radius, maxConnections, 0);
 
     }
 
@@ -57,6 +57,9 @@ public class Node extends Renderable {
 
     public void connect(Node n) {
         if (attachedBuildings.size() < maxConnections) ;
+    }
+
+    private void connect(Node n, Connection connection){
 
     }
 
@@ -64,7 +67,6 @@ public class Node extends Renderable {
         scale += 0.01;
 
         maxConnections = getPossibleConnections((int) (radius * scale), 100);
-        updateConnectionArray(radius, maxConnections, 0);
     }
 
     @Override
@@ -92,13 +94,7 @@ public class Node extends Renderable {
         main.noFill();
         main.stroke(255);
         main.beginShape();
-        for(Connector con : connections){
-            if(con.isConnected())
-                main.stroke(main.color(255, 0, 0));
-            else
-                main.stroke(main.color(0, 255, 0));
-            con.render(main, p.getX(), p.getY(), scale);
-        }
+
         main.endShape(PConstants.CLOSE);
         main.noStroke();
     }
@@ -107,37 +103,14 @@ public class Node extends Renderable {
     public void update() {
     }
 
-    /**
-     * Calculates the position of points {@code connections} on the circle of radius {@code radius}
-     *
-     * @param radius     The radius of the circle
-     * @param connectNum the number of connections to make
-     * @param offset     the offset (in radians) from the first point
-     * @return
-     */
-    private void updateConnectionArray(int radius, int connectNum, double offset) {
-        //Distance between each connection, as angle
-        connections = new ArrayList<>(connectNum);
-        double readRad = radius * scale;
-        double dist = Math.PI * 2 / connectNum;
-        for (int n = 1; n <= connectNum; n++)
-            connections.add(new Connector(Math.sin(offset + n * dist) * readRad, Math.cos(offset + n * dist) * readRad, this));
-    }
-
     private int getPossibleConnections(int radius, int spacing) {
         return (int) Math.PI * radius * 2 / spacing;
     }
 
-    public Connector getClosestConnection(final Point2i p){
-
-
-        ArrayList<Connector> con = new ArrayList<>(connections);
-        con.removeIf(Connector::isConnected);
-        if (con.size() == 0)
-            return null;
-
-        con.sort((c1, c2) -> Double.compare(c1.getPoint().computeDistanceSquared(p), c2.getPoint().computeDistanceSquared(p)));
-
-        return con.get(0);
+    public Point2i getClosestConnection(Point2i point){
+        Point2d vector = new Point2d(this.p.sub(point));
+        vector = vector.normalise();
+        vector = vector.multiply(radius);
+        return new Point2i(vector);
     }
 }
