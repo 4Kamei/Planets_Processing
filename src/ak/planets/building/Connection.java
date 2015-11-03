@@ -9,6 +9,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 
+import java.awt.geom.Line2D;
 import java.util.Arrays;
 
 /**
@@ -30,7 +31,6 @@ public class Connection extends Renderable{
     private double[] model;
     private int x, y;
     private int width;
-    private Point2d r1, r2, r3, r4;
 
     public Connection(PApplet main, Connector connector2, Connector connector1) {
         this.renderPriority = 10;
@@ -55,6 +55,11 @@ public class Connection extends Renderable{
      */
     public Connector[] getConnectors() {
         return new Connector[]{connector1, connector2};
+    }
+
+    public boolean isIntersection(Line2D intersect){
+        Line2D line1 = new Line2D.Double(connector1.getPoint().getX(), connector1.getPoint().getY(), connector2.getPoint().getX(), connector2.getPoint().getY());
+        return line1.intersectsLine(intersect);
     }
 
     @Override
@@ -84,10 +89,10 @@ public class Connection extends Renderable{
 
         Logger.log(Logger.LogLevel.DEBUG, "NormalisedVector to P1 and P2 is " + calcVector.toString());
 
-        r1 = con1_V.add(calcVector);
-        r2 = con2_V.add(calcVector);
-        r3 = con2_V.sub(calcVector);
-        r4 = con1_V.sub(calcVector);
+        Point2d r1 = con1_V.add(calcVector);
+        Point2d r2 = con2_V.add(calcVector);
+        Point2d r3 = con2_V.sub(calcVector);
+        Point2d r4 = con1_V.sub(calcVector);
 
         double xLength = Math.sqrt(con1.computeDistanceSquared(con2))/texture.width;
 
@@ -135,10 +140,6 @@ public class Connection extends Renderable{
         sb.append(", length=").append(length);
         sb.append(", main=").append(main);
         sb.append(", model=").append(Arrays.toString(model));
-        sb.append(", r1=").append(r1);
-        sb.append(", r2=").append(r2);
-        sb.append(", r3=").append(r3);
-        sb.append(", r4=").append(r4);
         sb.append(", texture=").append(texture);
         sb.append(", type=").append(type);
         sb.append(", width=").append(width);

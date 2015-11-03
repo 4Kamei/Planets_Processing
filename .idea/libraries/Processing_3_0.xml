@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="Processing 3.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Desktop/LIBRARIES/processing-3.0-windows64/processing-3.0/core/library/jogl-all-natives-windows-amd64.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/LIBRARIES/processing-3.0-windows64/processing-3.0/core/library/gluegen-rt.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/LIBRARIES/processing-3.0-windows64/processing-3.0/core/library/core.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/LIBRARIES/processing-3.0-windows64/processing-3.0/core/library/jogl-all.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/LIBRARIES/processing-3.0-windows64/processing-3.0/core/library/gluegen-rt-natives-windows-amd64.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <NATIVE>
+      <root url="jar://$USER_HOME$/Desktop/LIBRARIES/processing-3.0-windows64/processing-3.0/core/library/jogl-all-natives-windows-amd64.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/LIBRARIES/processing-3.0-windows64/processing-3.0/core/library/gluegen-rt-natives-windows-amd64.jar!/" />
+    </NATIVE>
+    <SOURCES />
+  </library>
+</component>

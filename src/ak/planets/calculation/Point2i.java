@@ -1,5 +1,6 @@
 package ak.planets.calculation;
 
+import ak.planets.building.Connector;
 import processing.core.PApplet;
 
 /**
@@ -92,5 +93,6 @@ public class Point2i {
     public void vertex(PApplet display) {
         display.vertex(x, y);
     }
+
 }
 

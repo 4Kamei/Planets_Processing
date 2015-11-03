@@ -39,7 +39,8 @@ public class Display extends PApplet {
     private RenderQueue queue;
     private Connector connector;
     private Camera camera;
-    private Background background;
+    private BackgroundOld background;
+
     public void settings() {
         size(800, 600, P2D);
         smooth();
@@ -57,7 +58,7 @@ public class Display extends PApplet {
         map = new Map();
         queue = new RenderQueue();
 
-        background = new Background(this, camera);
+        background = new BackgroundOld(this, camera);
 
 
         noStroke();
@@ -83,11 +84,11 @@ public class Display extends PApplet {
         }
     }
 
-    public void mainMenu(){
+    private void mainMenu(){
         background(0);
     }
 
-    public void add(Renderable n) {
+    private void add(Renderable n) {
 
         n.setup();
         if (n instanceof Node)
@@ -98,11 +99,10 @@ public class Display extends PApplet {
         }
         queue.addAndSort(n);
     }
-    public void delete(Node n){
+    private void delete(Node n){
         map.remove(n);
         queue.remove(n);
     }
-
 
     public void keyPressed(KeyEvent event) {
         Logger.log(DEBUG, "keyPressed " + event.getKeyCode());
@@ -163,6 +163,8 @@ public class Display extends PApplet {
 
                 if (connector == null) {
                     connector = c;
+                } else if (map.intersects(connector, c)){
+                    Logger.log(ALL, "Cannot create line between %s and %s", connector, c);
                 } else if (connector != c) {
                     Connection connection = new Connection(this, connector, c);
                     add(connection);

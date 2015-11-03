@@ -1,9 +1,15 @@
 package ak.planets.main;
 
+import ak.planets.building.Connection;
+import ak.planets.building.Connector;
 import ak.planets.building.Node;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
+import processing.core.PApplet;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,7 +22,7 @@ public class Map {
     HashMap<Point2i, Node> nodeMap;
     ArrayList<Point2i> points;
 
-    public Map() {
+    public Map(PApplet main) {
         this.nodeMap = new HashMap<>();
         this.points = new ArrayList<>();
     }
@@ -57,7 +63,7 @@ public class Map {
         return nodeMap.get(sorted.get(0));
     }
 
-    public ArrayList<Node> sortByDistance(final Point2i p){
+    public ArrayList<Node> sortByDistance(final Point2i p) {
         if (nodeMap.size() == 0)
             return null;
         ArrayList<Point2i> sorted = new ArrayList<>(points);
@@ -66,5 +72,13 @@ public class Map {
         sorted.stream().forEachOrdered(point -> nodeList.add(nodeMap.get(point)));
         Logger.log(Logger.LogLevel.DEBUG, "sortByDistance from " + p + " returned list of " + nodeList.size());
         return nodeList;
+    }
+
+    public boolean intersects(Connector con1, Connector con2) {
+        ArrayList<Connection> connectionMap = new ArrayList<>();
+        for (Point2i point2i : nodeMap.keySet()) {
+            Node n  = nodeMap.get(point2i);
+            n.getIntersection
+        }
     }
 }

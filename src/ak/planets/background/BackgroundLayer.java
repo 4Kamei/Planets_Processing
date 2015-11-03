@@ -68,25 +68,22 @@ public class BackgroundLayer extends Renderable{
     private void addImage(int tileX, int tileY){
         Logger.log(Logger.LogLevel.DEBUG, "Adding tile %d, %d, to %s", tileX, tileY, this);
 
-        Thread t = new Thread(() -> {
-            BackgroundLayerFactory factory = new BackgroundLayerFactory(elementWidth, elementHeight);
-            for (int x = 0; x < elementWidth; x++) {
-                for (int y = 0; y < elementHeight; y++) {
-                    if (Math.random() > 0.9999) {
-                        try {
-                            if (!factory.addStar(x, y, (Math.random()/2)))
-                                //Logger.log(Logger.LogLevel.DEBUG, this + " : Star added at %d, %d", x, y);
-                                Logger.log(Logger.LogLevel.ERROR,"%s : Star can't be added at %d, %d ", this, x, y);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+        BackgroundLayerFactory factory = new BackgroundLayerFactory(elementWidth, elementHeight);
+        for (int x = 0; x < elementWidth; x++) {
+            for (int y = 0; y < elementHeight; y++) {
+                if (Math.random() > 0.9999) {
+                    try {
+                        if (!factory.addStar(x, y, (Math.random()/2)))
+                            //Logger.log(Logger.LogLevel.DEBUG, this + " : Star added at %d, %d", x, y);
+                            Logger.log(Logger.LogLevel.ERROR,"%s : Star can't be added at %d, %d ", this, x, y);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }
-            this.addImage(tileX, tileY, factory.getTexture());
-        });
-        t.setName(String.format("BL textureGen for BL{%d, %d, z = %d,}", tileX, tileY, z));
-        t.start();
+        }
+        this.addImage(tileX, tileY, factory.getTexture());
+
     }
 
     private void addImage(int tileX, int tileY, PImage image){
@@ -135,22 +132,9 @@ public class BackgroundLayer extends Renderable{
 
         addImage( 0, 0);
         addImage( 0, 1);
-        addImage( 0, 2);
-        addImage( 0, 3);
-        addImage( 0, 4);
         addImage( 0, -1);
-        addImage( 0, -2);
-        addImage( 0, -3);
-        addImage( 0, -4);
         addImage( 1,  0);
-        addImage( 2,  0);
-        addImage( 3,  0);
-        addImage( 4,  0);
         addImage(-1,  0);
-        addImage(-2,  0);
-        addImage(-3,  0);
-        addImage(-4,  0);
-
     }
 
     @Override
@@ -158,9 +142,10 @@ public class BackgroundLayer extends Renderable{
         if(render) {
             cameraPosition = background.getCameraPosition();
             ArrayList<Point2i> visibleTiles = new ArrayList<>(keySet);
-            Point2i camera = cameraPosition.multiply(-1).add(cameraPosition.divide(z));
-            cameraPosition = camera;
+            Point2i camera = cameraPosition;
+            cameraPosition = cameraPosition.multiply(-1);
             visibleTiles.removeIf(this::isVisible);
+            camera = camera.multiply(-1).add(camera.divide(z));
 
             //FIXME: Visibility of background later tile depends on finalPosition, after the camera has been added.
             //FIXME: To stop addition to every tile, divide camera first by elementWidth and Height then check.
