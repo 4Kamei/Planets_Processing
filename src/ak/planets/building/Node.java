@@ -106,12 +106,10 @@ public class Node extends Renderable {
     }
 
     public Connector getClosestConnection(Point2i p){
-
         Point2d vector = new Point2d(p.sub(position));
         vector = vector.normalise();
         vector = vector.multiply(radius*scale);
         return new Connector(vector.getX(), vector.getY(), this);
-
     }
 
     public boolean isIntersecting(Line2D line){
