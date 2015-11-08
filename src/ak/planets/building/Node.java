@@ -1,5 +1,6 @@
 package ak.planets.building;
 
+import ak.planets.calculation.Point2d;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
@@ -7,6 +8,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 
@@ -18,31 +20,32 @@ public class Node extends Renderable {
     private PApplet main;
     private PImage texture;
     private int[] model;
-    private ArrayList<Connector> connections;
+
+    private ArrayList<Connection> connections;
+    private ArrayList<Node> attachedBuildings;
+
     private int maxConnections;
 
-    private Point2i p;
+    private Point2i position;
 
     private double scale;
     private final int radius = 100;
 
-    private ArrayList<Node> attachedBuildings;
 
     public Node(PApplet main, Point2i p, double scale) {
         this.renderPriority = 20;
-        this.p = p;
+        this.position = p;
         this.main = main;
         this.scale = scale;
         attachedBuildings = new ArrayList<>();
         connections = new ArrayList<>();
 
         maxConnections = getPossibleConnections((int) (radius * scale), 100);
-        updateConnectionArray(radius, maxConnections, 0);
 
     }
 
     public Point2i getPoint() {
-        return p;
+        return position;
     }
 
     public void removeRec(Node n) {
@@ -55,16 +58,17 @@ public class Node extends Renderable {
         attachedBuildings.remove(n);
     }
 
-    public void connect(Node n) {
-        if (attachedBuildings.size() < maxConnections) ;
-
+    public void connect(Node n, Connection connection) {
+        if (!connections.contains(connection)){
+            connections.add(connection);
+            n.connect(this, connection);
+        }
     }
 
     public void add() {
         scale += 0.01;
 
         maxConnections = getPossibleConnections((int) (radius * scale), 100);
-        updateConnectionArray(radius, maxConnections, 0);
     }
 
     @Override
@@ -86,58 +90,31 @@ public class Node extends Renderable {
         main.beginShape();
         main.texture(texture);
         for (int index = 0; index < model.length; )
-            main.vertex((int) (p.getX() + model[index++] * scale), (int) (p.getY() + model[index++] * scale), model[index++], model[index++]);
+            main.vertex((int) (position.getX() + model[index++] * scale), (int) (position.getY() + model[index++] * scale), model[index++], model[index++]);
         main.endShape();
 
         main.noFill();
-        main.stroke(255);
-        main.beginShape();
-        for(Connector con : connections){
-            if(con.isConnected())
-                main.stroke(main.color(255, 0, 0));
-            else
-                main.stroke(main.color(0, 255, 0));
-            con.render(main, p.getX(), p.getY(), scale);
-        }
-        main.endShape(PConstants.CLOSE);
-        main.noStroke();
+
     }
 
     @Override
     public void update() {
     }
 
-    /**
-     * Calculates the position of points {@code connections} on the circle of radius {@code radius}
-     *
-     * @param radius     The radius of the circle
-     * @param connectNum the number of connections to make
-     * @param offset     the offset (in radians) from the first point
-     * @return
-     */
-    private void updateConnectionArray(int radius, int connectNum, double offset) {
-        //Distance between each connection, as angle
-        connections = new ArrayList<>(connectNum);
-        double readRad = radius * scale;
-        double dist = Math.PI * 2 / connectNum;
-        for (int n = 1; n <= connectNum; n++)
-            connections.add(new Connector(Math.sin(offset + n * dist) * readRad, Math.cos(offset + n * dist) * readRad, this));
-    }
-
     private int getPossibleConnections(int radius, int spacing) {
         return (int) Math.PI * radius * 2 / spacing;
     }
 
-    public Connector getClosestConnection(final Point2i p){
+    public Connector getClosestConnection(Point2i p){
 
+        Point2d vector = new Point2d(p.sub(position));
+        vector = vector.normalise();
+        vector = vector.multiply(radius*scale);
+        return new Connector(vector.getX(), vector.getY(), this);
 
-        ArrayList<Connector> con = new ArrayList<>(connections);
-        con.removeIf(Connector::isConnected);
-        if (con.size() == 0)
-            return null;
+    }
 
-        con.sort((c1, c2) -> Double.compare(c1.getPoint().computeDistanceSquared(p), c2.getPoint().computeDistanceSquared(p)));
-
-        return con.get(0);
+    public boolean isIntersecting(Line2D line){
+        return connections.stream().anyMatch(c -> c.asLine().intersectsLine(line));
     }
 }

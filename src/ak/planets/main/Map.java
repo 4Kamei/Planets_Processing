@@ -1,9 +1,11 @@
 package ak.planets.main;
 
+import ak.planets.building.Connection;
 import ak.planets.building.Node;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
 
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -66,5 +68,8 @@ public class Map {
         sorted.stream().forEachOrdered(point -> nodeList.add(nodeMap.get(point)));
         Logger.log(Logger.LogLevel.DEBUG, "sortByDistance from " + p + " returned list of " + nodeList.size());
         return nodeList;
+    }
+    public boolean isIntersecting(Line2D line){
+        return nodeMap.values().stream().anyMatch(n -> n.isIntersecting(line));
     }
 }

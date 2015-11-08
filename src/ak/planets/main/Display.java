@@ -1,6 +1,5 @@
 package ak.planets.main;
 
-import ak.planets.background.Background;
 import ak.planets.background.BackgroundOld;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
@@ -13,6 +12,7 @@ import ak.planets.camera.Camera;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
+import sun.rmi.runtime.Log;
 
 import java.awt.*;
 
@@ -37,9 +37,12 @@ public class Display extends PApplet {
 
     private Map map;
     private RenderQueue queue;
-    private Connector connector;
+
+    private Connector connector_C;
+    private Node node_C;
+
     private Camera camera;
-    private Background background;
+    private BackgroundOld background;
     public void settings() {
         size(800, 600, P2D);
         smooth();
@@ -57,7 +60,7 @@ public class Display extends PApplet {
         map = new Map();
         queue = new RenderQueue();
 
-        background = new Background(this, camera);
+        background = new BackgroundOld(this, camera);
 
 
         noStroke();
@@ -92,10 +95,6 @@ public class Display extends PApplet {
         n.setup();
         if (n instanceof Node)
             map.add((Node) n);
-        if (n instanceof Connection){
-            Connection add_C = (Connection) n;
-            connector.connect(add_C);
-        }
         queue.addAndSort(n);
     }
     public void delete(Node n){
@@ -156,17 +155,25 @@ public class Display extends PApplet {
 
             if (closestNode != null) {
                 Connector c = closestNode.getClosestConnection(mouse);
-                if (c == null)
-                    return;
-                if (c.getPoint().computeDistanceSquared(mouse) > 200)
-                    return;
+                Logger.log(ALL, "Getting connection at %s from %s. It is %s", mouse, closestNode, c);
 
-                if (connector == null) {
-                    connector = c;
-                } else if (connector != c) {
-                    Connection connection = new Connection(this, connector, c);
-                    add(connection);
-                    connector = null;
+                if (c == null){
+                    System.out.println(mouse);
+                    return;
+                }
+
+                if ( connector_C == null) {
+                    connector_C = c;
+                    node_C = closestNode;
+
+                } else if ( connector_C != c) {
+                    Connection connection = new Connection(this, connector_C, c);
+                    if (!map.isIntersecting(connection.asLine())) {
+                        node_C.connect(closestNode, connection);
+                        add(connection);
+                    }
+                    connector_C = null;
+
                 }
             }
         } else if (gameState == MAIN_MENU) {

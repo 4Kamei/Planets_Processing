@@ -9,6 +9,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 
+import java.awt.geom.Line2D;
 import java.util.Arrays;
 
 /**
@@ -53,8 +54,13 @@ public class Connection extends Renderable{
     /**
      * @return {@code Array} containing 2 {@code Connector}
      */
+
     public Connector[] getConnectors() {
         return new Connector[]{connector1, connector2};
+    }
+
+    public Line2D asLine(){
+        return new Line2D.Float(connector1.getPoint().getX(), connector1.getPoint().getY(), connector2.getPoint().getX(), connector2.getPoint().getY());
     }
 
     @Override
