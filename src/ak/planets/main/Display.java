@@ -9,6 +9,9 @@ import ak.planets.building.Connection;
 import ak.planets.building.Connector;
 import ak.planets.building.Node;
 import ak.planets.camera.Camera;
+import ak.planets.ui.ClickAction;
+import ak.planets.ui.UIComponent;
+import ak.planets.ui.UIContainer;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
@@ -43,6 +46,9 @@ public class Display extends PApplet {
 
     private Camera camera;
     private BackgroundOld background;
+
+    private UIContainer container;
+
     public void settings() {
         size(800, 600, P2D);
         smooth();
@@ -67,6 +73,15 @@ public class Display extends PApplet {
         Logger.log(ALL, "Game Started");
 
         add(background);
+
+        container.addComponent(new UIComponent(container, "Button", new ClickAction() {
+
+            @Override
+            public void exectute() {
+                Logger.log(DEBUG, "Clicked? Maybe");
+            }
+        }, new int[]{0, 30, 30, 30, 30, 0, 0, 0}, 30, 30));
+
     }
 
     public void draw() {
