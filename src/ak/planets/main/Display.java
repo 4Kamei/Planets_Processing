@@ -9,15 +9,15 @@ import ak.planets.building.Connection;
 import ak.planets.building.Connector;
 import ak.planets.building.Node;
 import ak.planets.camera.Camera;
-import ak.planets.ui.ClickAction;
-import ak.planets.ui.UIComponent;
-import ak.planets.ui.UIContainer;
+import ak.planets.ui.clickable.ButtonAction;
+import ak.planets.ui.clickable.UIButton;
+import ak.planets.ui.clickable.UIContainer;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
-import sun.rmi.runtime.Log;
 
 import java.awt.*;
+import java.io.IOException;
 
 import static ak.planets.main.Display.GameState.*;
 import static ak.planets.logger.Logger.LogLevel.*;
@@ -66,6 +66,7 @@ public class Display extends PApplet {
         map = new Map();
         queue = new RenderQueue();
 
+        //TODO: Make new layered background work
         background = new BackgroundOld(this, camera);
 
 
@@ -74,14 +75,49 @@ public class Display extends PApplet {
 
         add(background);
 
-        container.addComponent(new UIComponent(container, "Button", new ClickAction() {
+        container = new UIContainer(this, 1, 1, "res/texture/ui/sideUI/button.png");
 
-            @Override
-            public void exectute() {
-                Logger.log(DEBUG, "Clicked? Maybe");
-            }
-        }, new int[]{0, 30, 30, 30, 30, 0, 0, 0}, 30, 30));
+        try {
+            container.addComponent(new UIButton("Button1", new ButtonAction() {
+                @Override
+                public void exectute() {
+                    Logger.log(DEBUG, "Clicked? Button1");
+                }
 
+                @Override
+                public void onHover() {
+
+                }
+            },60, 30));
+            container.addComponent(new UIButton("Button2", new ButtonAction() {
+                @Override
+                public void exectute() {
+                    Logger.log(DEBUG, "Clicked? Button2");
+                }
+
+                @Override
+                public void onHover() {
+
+                }
+            },60, 30));
+            container.addComponent(new UIButton("Button3", new ButtonAction() {
+                @Override
+                public void exectute() {
+                    Logger.log(DEBUG, "Clicked? Button3");
+                }
+
+                @Override
+                public void onHover() {
+
+                }
+            },60, 30));
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        container.setLayout(UIContainer.VERTICAL);
+
+
+        textureMode(NORMAL);
     }
 
     public void draw() {
@@ -98,6 +134,9 @@ public class Display extends PApplet {
                 queue.next().render();
             queue.reset();
             popMatrix();    //restore coord system
+
+            //Render Static Components.
+            container.render();
         }
     }
 
@@ -106,7 +145,6 @@ public class Display extends PApplet {
     }
 
     public void add(Renderable n) {
-
         n.setup();
         if (n instanceof Node)
             map.add((Node) n);
@@ -161,36 +199,50 @@ public class Display extends PApplet {
     }
 
     public void mousePressed(MouseEvent event) {
+        Logger.log(DEBUG, "mousePressed" + event);
         if (gameState == PLAYING) {
-            camera.mousePressed(event);
-            Logger.log(DEBUG, "mousePressed" + event);
-            Point2i mouse = camera.getRelativePosition(mouseX, mouseY);
-            Node closestNode = map.search(mouse, -1);
-            Logger.log(DEBUG, closestNode + " = closestNode");
-
-            if (closestNode != null) {
-                Connector c = closestNode.getClosestConnection(mouse);
-                Logger.log(ALL, "Getting connection at %s from %s. It is %s", mouse, closestNode, c);
-
-                if (c == null){
-                    System.out.println(mouse);
+            if (event.getButton() == 37){
+                //Left Click
+                if (container.checkClick(mouseX, mouseY))
                     return;
-                }
 
-                if ( connector_C == null) {
-                    connector_C = c;
-                    node_C = closestNode;
+                Point2i mouse = camera.getRelativePosition(mouseX, mouseY);
+                Node closestNode = map.search(mouse, -1);
+                Logger.log(DEBUG, closestNode + " = closestNode");
 
-                } else if ( connector_C != c) {
-                    Connection connection = new Connection(this, connector_C, c);
-                    if (!map.isIntersecting(connection.asLine())) {
-                        node_C.connect(closestNode, connection);
-                        add(connection);
+                if (closestNode != null) {
+                    Connector c = closestNode.getClosestConnection(mouse);
+                    Logger.log(ALL, "Getting connection at %s from %s. It is %s", mouse, closestNode, c);
+
+                    if (c == null){
+                        System.out.println(mouse);
+                        return;
                     }
-                    connector_C = null;
 
+                    if ( connector_C == null) {
+                        connector_C = c;
+                        node_C = closestNode;
+
+                    } else if ( connector_C != c) {
+                        Connection connection = new Connection(this, connector_C, c);
+                        if (!map.isIntersecting(connection.asLine())) {
+                            node_C.connect(closestNode, connection);
+                            add(connection);
+                        }
+                        connector_C = null;
+
+                    }
                 }
+
+            }else if (event.getButton() == 39){
+                //Right Click
+
+            }else if (event.getButton() == 3){
+                //Middle Mouse
+                camera.mousePressed(event);
             }
+
+
         } else if (gameState == MAIN_MENU) {
 
         }
