@@ -33,7 +33,6 @@ public class RenderQueue {
 
     public void remove(Renderable r){
         queue.remove(queue.indexOf(r));
-        queue.sort((r1, r2) -> -1);
     }
 
     public RenderQueue(){
