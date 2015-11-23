@@ -12,6 +12,8 @@ import ak.planets.camera.Camera;
 import ak.planets.ui.clickable.ButtonAction;
 import ak.planets.ui.clickable.UIButton;
 import ak.planets.ui.clickable.UIContainer;
+import ak.planets.ui.placement.NodeShadow;
+import ak.planets.ui.placement.PlaceUtil;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
@@ -26,6 +28,7 @@ import static ak.planets.logger.Logger.LogLevel.*;
  */
 public class Display extends PApplet {
 
+
     public static void main(String[] args) {
         PApplet.main(new String[]{"ak.planets.main.Display"});
     }
@@ -36,18 +39,20 @@ public class Display extends PApplet {
         PAUSED,
     }
 
+    private PlaceUtil placeUtil;
+
     private GameState gameState;
 
     private Map map;
     private RenderQueue queue;
 
-    private Connector connector_C;
-    private Node node_C;
-
     private Camera camera;
     private BackgroundOld background;
 
     private UIContainer container;
+
+
+    private boolean shiftPressed;
 
     public void settings() {
         size(800, 600, P2D);
@@ -77,40 +82,42 @@ public class Display extends PApplet {
 
         container = new UIContainer(this, 1, 1, "res/texture/ui/sideUI/button.png");
 
+        PApplet main = this;
+
         try {
-            container.addComponent(new UIButton("Button1", new ButtonAction() {
+            container.addComponent(new UIButton("New Node", new ButtonAction() {
                 @Override
                 public void exectute() {
-                    Logger.log(DEBUG, "Clicked? Button1");
+                    placeUtil = new NodeShadow(main);
                 }
 
                 @Override
                 public void onHover() {
-
+                //TODO: POP UP BUBBLE
                 }
-            },60, 30));
+            }, 90, 30));
             container.addComponent(new UIButton("Button2", new ButtonAction() {
                 @Override
                 public void exectute() {
-                    Logger.log(DEBUG, "Clicked? Button2");
+                    placeUtil = null;
                 }
 
                 @Override
                 public void onHover() {
 
                 }
-            },60, 30));
+            }, 90, 30));
+
             container.addComponent(new UIButton("Button3", new ButtonAction() {
                 @Override
                 public void exectute() {
-                    Logger.log(DEBUG, "Clicked? Button3");
                 }
 
                 @Override
                 public void onHover() {
 
                 }
-            },60, 30));
+            }, 90, 30));
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -133,9 +140,14 @@ public class Display extends PApplet {
             while (queue.hasNext())
                 queue.next().render();
             queue.reset();
-            popMatrix();    //restore coord system
 
             //Render Static Components.
+            if (placeUtil != null){
+                placeUtil.render();
+            }
+
+            popMatrix();    //restore coord system
+
             container.render();
         }
     }
@@ -159,14 +171,9 @@ public class Display extends PApplet {
     public void keyPressed(KeyEvent event) {
         Logger.log(DEBUG, "keyPressed " + event.getKeyCode());
         if(gameState == PLAYING){
-
             switch (event.getKeyCode()) {
-                case 65:
-                    Node node = new Node(this, camera.getRelativePosition(mouseX, mouseY), 0.1);
-                    add(node);
-                    for (int i = 0;i < 40;i++){
-                        node.add();
-                    }
+                case 16:
+                    shiftPressed = true;
                     break;
                 case 88:
                     background.toggleHidden();
@@ -187,12 +194,28 @@ public class Display extends PApplet {
         }
     }
 
+    public void keyReleased(KeyEvent event) {
+        Logger.log(DEBUG, "keyReleased ", event.getKeyCode());
+        switch (event.getKeyCode()) {
+            case 16:
+                shiftPressed = false;
+                break;
+        }
+    }
+
     public void mouseWheel(MouseEvent event) {
         /*
         Node addSize = map.search(camera.getRelativePosition(mouseX, mouseY), 100);
         if(addSize != null)
             addSize.add();
         */
+
+        //Scroll
+        if (placeUtil != null) {
+            placeUtil.scroll(event.getCount() * -1);
+        }
+
+        //Update camera zoom
         if(mouseButton == 37){
             camera.updateZoom(event.getCount() * 0.05);
         }
@@ -202,9 +225,26 @@ public class Display extends PApplet {
         Logger.log(DEBUG, "mousePressed" + event);
         if (gameState == PLAYING) {
             if (event.getButton() == 37){
-                //Left Click
+                //Check if UI clicked
                 if (container.checkClick(mouseX, mouseY))
                     return;
+
+                //Check if 'shadow' placement clicked
+                if (placeUtil != null){
+                    placeUtil.onClick();
+                    if (placeUtil.ready()){
+                        Renderable r = placeUtil.fetchObject();
+                        if (r instanceof Node){
+                            add(r);
+                        }else if (r instanceof Connection){
+                            add(r);
+                        }
+                        if(!shiftPressed)
+                            placeUtil = null;
+                    }
+                }
+                //Left Click
+                /*
 
                 Point2i mouse = camera.getRelativePosition(mouseX, mouseY);
                 Node closestNode = map.search(mouse, -1);
@@ -230,12 +270,12 @@ public class Display extends PApplet {
                             add(connection);
                         }
                         connector_C = null;
-
                     }
                 }
-
+                */
             }else if (event.getButton() == 39){
-                //Right Click
+                if (placeUtil != null)
+                    placeUtil = null;
 
             }else if (event.getButton() == 3){
                 //Middle Mouse
@@ -258,7 +298,19 @@ public class Display extends PApplet {
     public void mouseMoved(){
         //Needs to be called on every update to pass mouse coords into camera
         if(gameState == PLAYING){
+
+            //Update camera?
             camera.mouseMoved(mouseX, mouseY);
+
+            //Update 'shadow' for placement
+            if (placeUtil != null) {
+                if (placeUtil.shouldUpdate()) {
+                    Point2i point = camera.getRelativePosition(mouseX, mouseY);
+                    placeUtil.updatePosition(point.getX(), point.getY());
+                }
+            }
+
+
         }
     }
 

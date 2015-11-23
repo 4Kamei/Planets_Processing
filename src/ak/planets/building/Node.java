@@ -75,7 +75,7 @@ public class Node extends Renderable {
     public void setup() {
         this.texture = main.loadImage("res/texture/building/outline.png");
         Logger.log(Logger.LogLevel.DEBUG, "Texture size for connection is " + texture.width + " : " + texture.height);
-                model = new int[]{
+        model = new int[]{
                 -radius, radius, 0, 1,
                 radius, radius, 1, 1,
                 radius, -radius, 1, 0,
