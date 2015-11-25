@@ -9,6 +9,7 @@ import ak.planets.building.Connection;
 import ak.planets.building.Connector;
 import ak.planets.building.Node;
 import ak.planets.camera.Camera;
+import ak.planets.ui.TileOverlay;
 import ak.planets.ui.clickable.ButtonAction;
 import ak.planets.ui.clickable.UIButton;
 import ak.planets.ui.clickable.UIContainer;
@@ -54,6 +55,8 @@ public class Display extends PApplet {
 
     private boolean shiftPressed;
 
+    private TileOverlay tileOverlay;
+
     public void settings() {
         size(800, 600, P2D);
         smooth();
@@ -85,7 +88,7 @@ public class Display extends PApplet {
         PApplet main = this;
 
         try {
-            container.addComponent(new UIButton("New Node", new ButtonAction() {
+            container.addComponent(new UIButton("New     \n     Node", new ButtonAction() {
                 @Override
                 public void exectute() {
                     placeUtil = new NodeShadow(main);
@@ -95,34 +98,47 @@ public class Display extends PApplet {
                 public void onHover() {
                 //TODO: POP UP BUBBLE
                 }
-            }, 90, 30));
-            container.addComponent(new UIButton("Button2", new ButtonAction() {
+            }, 90, 40));
+            container.addComponent(new UIButton("Toggle     \n    Overlay", new ButtonAction() {
                 @Override
                 public void exectute() {
-                    placeUtil = null;
+                    tileOverlay.toggleVisible();
                 }
 
                 @Override
                 public void onHover() {
 
                 }
-            }, 90, 30));
-
-            container.addComponent(new UIButton("Button3", new ButtonAction() {
+            }, 90, 40));
+            container.addComponent(new UIButton("Increase     \n    Size", new ButtonAction() {
                 @Override
                 public void exectute() {
+                    tileOverlay.inc();
                 }
 
                 @Override
                 public void onHover() {
 
                 }
-            }, 90, 30));
+            }, 90, 40));
+            container.addComponent(new UIButton("Decrease     \n    Size", new ButtonAction() {
+                @Override
+                public void exectute() {
+                    tileOverlay.dec();
+                }
+
+                @Override
+                public void onHover() {
+
+                }
+            }, 90, 40));
         }catch (IOException e){
             e.printStackTrace();
         }
+
         container.setLayout(UIContainer.VERTICAL);
 
+        tileOverlay = new TileOverlay(map,main,camera);
 
         textureMode(NORMAL);
     }
@@ -148,6 +164,8 @@ public class Display extends PApplet {
 
             popMatrix();    //restore coord system
 
+            if (tileOverlay.isVisible())
+                tileOverlay.render();
             container.render();
         }
     }
@@ -265,7 +283,7 @@ public class Display extends PApplet {
 
                     } else if ( connector_C != c) {
                         Connection connection = new Connection(this, connector_C, c);
-                        if (!map.isIntersecting(connection.asLine())) {
+                        if (!map.isConnectionIntersecting(connection.asLine())) {
                             node_C.connect(closestNode, connection);
                             add(connection);
                         }

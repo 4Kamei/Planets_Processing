@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Created by Aleksander on 08/11/2015.
  */
-public class UIContainer extends Renderable{
+public class UIContainer {
 
     public static final int VERTICAL = 2;
     public static final int HORIZONTAL = 1;
@@ -24,7 +24,6 @@ public class UIContainer extends Renderable{
 
     public UIContainer(PApplet main, int x, int y, String s){
         this.imagePath = s;
-        this.renderPriority = 1;
         this.main = main;
         this.components = new ArrayList<>();
         this.index = 0;
@@ -57,20 +56,13 @@ public class UIContainer extends Renderable{
         index = 0;
     }
 
-    @Override
     public void setup() {
 
     }
 
-    @Override
     public void render() {
         reset();
         while (renderUpdate());
-
-    }
-
-    @Override
-    public void update() {
 
     }
 

@@ -17,16 +17,15 @@ public class NodeShadow extends PlaceUtil {
 
     public NodeShadow(PApplet main) {
         super(main);
-        int radius = 100;
         model = new int[]{
-                -radius, radius, 0, 1,
-                radius, radius, 1, 1,
-                radius, -radius, 1, 0,
-                -radius, -radius, 0, 0
+                -1, 1, 0, 1,
+                1, 1, 1, 1,
+                1, -1, 1, 0,
+                -1, -1, 0, 0
         };
         this.texture = main.loadImage("res/texture/building/outline.png");
 
-        scale = 0.2;
+        scale = 30;
     }
 
 
@@ -45,8 +44,9 @@ public class NodeShadow extends PlaceUtil {
     }
 
     @Override
+    //Direction is always 1 or -1
     public void scroll(int direction){
-        scale += 0.01 * direction;
+        scale += direction;
     }
 
     @Override

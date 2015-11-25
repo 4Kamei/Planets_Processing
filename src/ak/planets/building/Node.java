@@ -10,6 +10,7 @@ import processing.core.PImage;
 
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 /**
@@ -29,8 +30,6 @@ public class Node extends Renderable {
     private Point2i position;
 
     private double scale;
-    private final int radius = 100;
-
 
     public Node(PApplet main, Point2i p, double scale) {
         this.renderPriority = 20;
@@ -40,7 +39,7 @@ public class Node extends Renderable {
         attachedBuildings = new ArrayList<>();
         connections = new ArrayList<>();
 
-        maxConnections = getPossibleConnections((int) (radius * scale), 100);
+        maxConnections = getPossibleConnections((int) (scale), 100);
 
     }
 
@@ -65,10 +64,13 @@ public class Node extends Renderable {
         }
     }
 
+    public double getSize(){
+        return scale;
+    }
     public void add() {
-        scale += 0.01;
+        scale += 1;
 
-        maxConnections = getPossibleConnections((int) (radius * scale), 100);
+        maxConnections = getPossibleConnections((int) (scale), 100);
     }
 
     @Override
@@ -76,10 +78,10 @@ public class Node extends Renderable {
         this.texture = main.loadImage("res/texture/building/outline.png");
         Logger.log(Logger.LogLevel.DEBUG, "Texture size for connection is " + texture.width + " : " + texture.height);
         model = new int[]{
-                -radius, radius, 0, 1,
-                radius, radius, 1, 1,
-                radius, -radius, 1, 0,
-                -radius, -radius, 0, 0
+                -1, 1, 0, 1,
+                1, 1, 1, 1,
+                1, -1, 1, 0,
+                -1, -1, 0, 0
         };
     }
 
@@ -92,6 +94,9 @@ public class Node extends Renderable {
         for (int index = 0; index < model.length; )
             main.vertex((int) (position.getX() + model[index++] * scale), (int) (position.getY() + model[index++] * scale), model[index++], model[index++]);
         main.endShape();
+
+        main.fill(0, 255, 0);
+        main.text(String.format(Locale.CANADA_FRENCH, "%s", position), position.getX(), position.getY());
 
         main.noFill();
 
@@ -108,7 +113,7 @@ public class Node extends Renderable {
     public Connector getClosestConnection(Point2i p){
         Point2d vector = new Point2d(p.sub(position));
         vector = vector.normalise();
-        vector = vector.multiply(radius*scale);
+        vector = vector.multiply(scale);
         return new Connector(vector.getX(), vector.getY(), this);
     }
 

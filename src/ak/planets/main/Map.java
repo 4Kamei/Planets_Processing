@@ -69,7 +69,10 @@ public class Map {
         Logger.log(Logger.LogLevel.DEBUG, "sortByDistance from " + p + " returned list of " + nodeList.size());
         return nodeList;
     }
-    public boolean isIntersecting(Line2D line){
+    public boolean isConnectionIntersecting(Line2D line){
         return nodeMap.values().stream().anyMatch(n -> n.isIntersecting(line));
+    }
+    public boolean isInNode(int x, int y){
+        return nodeMap.values().parallelStream().anyMatch(n -> n.getPoint().computeDistanceSquared(x, y) < n.getSize()*n.getSize());
     }
 }
