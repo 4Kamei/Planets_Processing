@@ -15,7 +15,7 @@ public class TileOverlay extends Renderable {
     private PApplet main;
     private Camera camera;
     private boolean visible;
-    private int size = 1;
+    private int size = 4;
 
     public TileOverlay(Map map, PApplet main, Camera camera) {
         this.map = map;

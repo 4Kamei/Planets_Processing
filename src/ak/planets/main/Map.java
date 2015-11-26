@@ -15,8 +15,8 @@ import java.util.HashMap;
 
 public class Map {
 
-    HashMap<Point2i, Node> nodeMap;
-    ArrayList<Point2i> points;
+    private HashMap<Point2i, Node> nodeMap;
+    private ArrayList<Point2i> points;
 
     public Map() {
         this.nodeMap = new HashMap<>();
@@ -66,13 +66,14 @@ public class Map {
         sorted.sort((p1, p2) -> Double.compare(p1.computeDistanceSquared(p), p2.computeDistanceSquared(p)));
         ArrayList<Node> nodeList = new ArrayList<>(sorted.size());
         sorted.stream().forEachOrdered(point -> nodeList.add(nodeMap.get(point)));
-        Logger.log(Logger.LogLevel.DEBUG, "sortByDistance from " + p + " returned list of " + nodeList.size());
         return nodeList;
     }
     public boolean isConnectionIntersecting(Line2D line){
         return nodeMap.values().stream().anyMatch(n -> n.isIntersecting(line));
     }
+
+    //TODO: Make this not O(n^2)
     public boolean isInNode(int x, int y){
-        return nodeMap.values().parallelStream().anyMatch(n -> n.getPoint().computeDistanceSquared(x, y) < n.getSize()*n.getSize());
+        return sortByDistance(new Point2i(x, y)).stream().anyMatch(n -> n.getPoint().computeDistanceSquared(x, y) < n.getSize() * n.getSize());
     }
 }
