@@ -5,6 +5,7 @@ import ak.planets.calculation.Point2i;
 import ak.planets.camera.Camera;
 import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
+import ak.planets.util.TextureUtil;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -24,7 +25,7 @@ public class BackgroundOld extends Renderable{
         this.renderPriority = 30;
         stars = new ArrayList<>();
         this.main = main;
-        this.starTexture = main.loadImage("res/texture/background/star.png");
+        this.starTexture = TextureUtil.getImage("res/texture/background/star.png");
         this.camera = camera;
     }
 

@@ -3,25 +3,24 @@ package ak.planets.background;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
+import ak.planets.render.RenderableEntity;
 import processing.core.PApplet;
 
 /**
  * Created by Aleksander on 26/10/2015.
  */
-public class Star extends Renderable{
+public class Star extends RenderableEntity{
 
-    private Point2i position;
+
     private Point2i cameraPosition;
-    private int[] model;
     private double scale;
     private BackgroundOld background;
-    private PApplet main;
     private int z;
 
     public Star(Point2i position, BackgroundOld background, PApplet main, int z){
+        super(main);
         this.position = position;
         this.background = background;
-        this.main = main;
         this.renderPriority = 40;
         this.scale = 1;
         this.z = z;
@@ -30,7 +29,7 @@ public class Star extends Renderable{
     @Override
     public void setup() {
         Logger.log(Logger.LogLevel.DEBUG, this + " is setup");
-        model = new int[]{
+        model = new float[]{
                 -10 , -10, 0, 0,
                  10 , -10, 1, 0,
                  10 ,  10, 1, 1,
@@ -47,8 +46,8 @@ public class Star extends Renderable{
         main.texture(background.getStarTexture());
         for (int index = 0; index < model.length; index+=4) {
             main.vertex(
-                    (float) (model[index]/z + position.getX() +cameraPosition.getX()),
-                    (float) (model[index+1]/z + position.getY() +cameraPosition.getY()),
+                    model[index]/z + position.getX() +cameraPosition.getX(),
+                    model[index+1]/z + position.getY() +cameraPosition.getY(),
                     model[index+2],
                     model[index+3]);
         }

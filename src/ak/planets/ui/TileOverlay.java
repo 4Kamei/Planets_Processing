@@ -1,10 +1,15 @@
 package ak.planets.ui;
 
 import ak.planets.camera.Camera;
+import ak.planets.logger.Logger;
 import ak.planets.main.Map;
 import ak.planets.render.Renderable;
+import ak.planets.tiles.Tile;
 import processing.core.PApplet;
 import processing.core.PConstants;
+import sun.rmi.runtime.Log;
+
+import java.util.ArrayList;
 
 /**
  * Created by Aleksander on 25/11/2015.
@@ -15,7 +20,7 @@ public class TileOverlay extends Renderable {
     private PApplet main;
     private Camera camera;
     private boolean visible;
-    private int size = 4;
+    private int size = 8;
 
     public TileOverlay(Map map, PApplet main, Camera camera) {
         this.map = map;
@@ -42,19 +47,15 @@ public class TileOverlay extends Renderable {
             main.line(0,y,main.width,y);
         }
         main.noStroke();
-        main.fill(255, 0, 0, 50);
+        main.fill(255, 0, 0, 20);
 
         main.rectMode(PConstants.CENTER);
 
-        for (int x = camX%size; x < (main.width); x += size){
-            for (int y = camY%size; y < (main.height); y += size) {
-                if (map.isInNode(x - camX + size/2, y - camY + size/2)){
-                    main.rect(x + size / 2, y + size / 2, size, size);
-                }
-            }
-        }
-        main.noFill();
-
+        ArrayList<Tile> tiles = map.getAllUsedTiles(0, 0, main.width, main.height);
+        //Logger.log(Logger.LogLevel.DEBUG, "TILES LENGTH = %d", tiles.size() );
+        camera.update();
+        tiles.forEach(Tile::render);
+        main.popMatrix();
     }
 
     @Override
@@ -70,11 +71,4 @@ public class TileOverlay extends Renderable {
         visible = !visible;
     }
 
-    public void inc(){
-        size++;
-    }
-
-    public void dec(){
-        size--;
-    }
 }

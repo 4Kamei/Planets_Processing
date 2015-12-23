@@ -18,9 +18,11 @@ import ak.planets.ui.placement.PlaceUtil;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
+import sun.rmi.runtime.Log;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import static ak.planets.main.Display.GameState.*;
 import static ak.planets.logger.Logger.LogLevel.*;
@@ -71,7 +73,7 @@ public class Display extends PApplet {
         gameState = PLAYING;
 
         camera = new Camera(this);
-        map = new Map();
+        map = new Map(this);
         queue = new RenderQueue();
 
         //TODO: Make new layered background work
@@ -92,6 +94,7 @@ public class Display extends PApplet {
                 @Override
                 public void exectute() {
                     placeUtil = new NodeShadow(main);
+                    updatePlaceUtil();
                 }
 
                 @Override
@@ -103,28 +106,6 @@ public class Display extends PApplet {
                 @Override
                 public void exectute() {
                     tileOverlay.toggleVisible();
-                }
-
-                @Override
-                public void onHover() {
-
-                }
-            }, 90, 40));
-            container.addComponent(new UIButton("Increase     \n    Size", new ButtonAction() {
-                @Override
-                public void exectute() {
-                    tileOverlay.inc();
-                }
-
-                @Override
-                public void onHover() {
-
-                }
-            }, 90, 40));
-            container.addComponent(new UIButton("Decrease     \n    Size", new ButtonAction() {
-                @Override
-                public void exectute() {
-                    tileOverlay.dec();
                 }
 
                 @Override
@@ -176,8 +157,12 @@ public class Display extends PApplet {
 
     public void add(Renderable n) {
         n.setup();
-        if (n instanceof Node)
-            map.add((Node) n);
+        if (n instanceof Node){
+           if (!map.add((Node) n)){
+               Logger.log(ALL, "Node not added successfully!");
+               return;
+           }
+        }
         queue.addAndSort(n);
     }
     public void delete(Node n){
@@ -322,17 +307,23 @@ public class Display extends PApplet {
 
             //Update 'shadow' for placement
             if (placeUtil != null) {
-                if (placeUtil.shouldUpdate()) {
-                    Point2i point = camera.getRelativePosition(mouseX, mouseY);
-                    placeUtil.updatePosition(point.getX(), point.getY());
-                }
+                updatePlaceUtil();
             }
-
 
         }
     }
 
     public void mouseDragged(){
         this.mouseMoved();
+    }
+
+    private void updatePlaceUtil(){
+        if (placeUtil.shouldUpdate()) {
+            Point2i point = camera.getRelativePosition(mouseX, mouseY);
+            point = point.add(new Point2i(4 , 4));
+            point = point.divide(8);
+            point = point.multiply(8);
+            placeUtil.updatePosition(point.getX(), point.getY());
+        }
     }
 }

@@ -4,42 +4,43 @@ import ak.planets.calculation.Point2d;
 import ak.planets.calculation.Point2i;
 import ak.planets.logger.Logger;
 import ak.planets.render.Renderable;
+import ak.planets.render.RenderableEntity;
+import ak.planets.util.TextureUtil;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 
 /**
  * Created by Aleksander on 18/10/2015.
  */
-public class Node extends Renderable {
-
-    private PApplet main;
-    private PImage texture;
-    private int[] model;
+public class Node extends RenderableEntity {
 
     private ArrayList<Connection> connections;
     private ArrayList<Node> attachedBuildings;
 
     private int maxConnections;
 
-    private Point2i position;
 
     private double scale;
 
+    private ArrayList<Point2i> tiles;
+
     public Node(PApplet main, Point2i p, double scale) {
+        super(main);
         this.renderPriority = 20;
         this.position = p;
         this.main = main;
         this.scale = scale;
         attachedBuildings = new ArrayList<>();
         connections = new ArrayList<>();
-
         maxConnections = getPossibleConnections((int) (scale), 100);
+
 
     }
 
@@ -67,17 +68,12 @@ public class Node extends Renderable {
     public double getSize(){
         return scale;
     }
-    public void add() {
-        scale += 1;
-
-        maxConnections = getPossibleConnections((int) (scale), 100);
-    }
 
     @Override
     public void setup() {
-        this.texture = main.loadImage("res/texture/building/outline.png");
+        this.texture = TextureUtil.getImage("res/texture/building/outline.png");
         Logger.log(Logger.LogLevel.DEBUG, "Texture size for connection is " + texture.width + " : " + texture.height);
-        model = new int[]{
+        model = new float[]{
                 -1, 1, 0, 1,
                 1, 1, 1, 1,
                 1, -1, 1, 0,
@@ -89,17 +85,20 @@ public class Node extends Renderable {
     public void render() {
         main.textureMode(PConstants.NORMAL);
 
-        main.beginShape();
-        main.texture(texture);
-        for (int index = 0; index < model.length; )
-            main.vertex((int) (position.getX() + model[index++] * scale), (int) (position.getY() + model[index++] * scale), model[index++], model[index++]);
-        main.endShape();
-
         main.fill(0, 255, 0);
-        main.text(String.format(Locale.CANADA_FRENCH, "%s", position), position.getX(), position.getY());
+        //On mouse hover show outline
+        /*
+        is the mouse currently on the node
+        */
 
+        //main.text(String.format(Locale.CANADA_FRENCH, "%s", position), position.getX(), position.getY());
         main.noFill();
 
+        main.beginShape();
+            main.texture(texture);
+            for (int index = 0; index < model.length; )
+                main.vertex((int) (position.getX() + model[index++] * scale), (int) (position.getY() + model[index++] * scale), model[index++], model[index++]);
+        main.endShape();
     }
 
     @Override
