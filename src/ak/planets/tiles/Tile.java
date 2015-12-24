@@ -15,8 +15,14 @@ public class Tile extends Renderable{
     private int tileY;
     private final int size = 8;
     private PApplet main;
+    private int type;
 
-    public Tile(PApplet main, int tileX, int tileY) {
+    public static final int INNER = 1;
+    public static final int OUTER = 2;
+
+    public Tile(PApplet main, int tileX, int tileY, int type) {
+        Logger.log(Logger.LogLevel.DEBUG, "Tile generated with position {%d, %d} and affinity %d", tileX, tileY, type);
+        this.type = type;
         this.main = main;
         this.tileX = tileX;
         this.tileY = tileY;
@@ -76,7 +82,10 @@ public class Tile extends Renderable{
         int actY = getActualY();
         int actSize = size;
         main.shapeMode(PConstants.CENTER);
-        main.fill(0 , 255, 0, 50);
+        if (type == INNER)
+            main.fill(0 , 255, 0, 50);
+        else
+            main.fill(255, 0, 0);
         main.stroke(0, 127, 0, 127);
         main.rect(actX + actSize/2, actY+actSize/2, actSize, actSize);
         main.noFill();

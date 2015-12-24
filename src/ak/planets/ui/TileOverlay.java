@@ -51,8 +51,11 @@ public class TileOverlay extends Renderable {
 
         main.rectMode(PConstants.CENTER);
 
-        ArrayList<Tile> tiles = map.getAllUsedTiles(0, 0, main.width, main.height);
-        //Logger.log(Logger.LogLevel.DEBUG, "TILES LENGTH = %d", tiles.size() );
+        //TODO: Better bounding box
+        ArrayList<Tile> tiles = map.getAllUsedTiles(-camX-40, -camY-40, main.width-camX+40, main.height-camY+40);
+        //Logger.log(Logger.LogLevel.DEBUG, "TILES LENGTH = %d", tiles.size());
+
+        //Camera.update called to translate coord system, this allows the tiles to draw properly, at their respective X and Y positions.
         camera.update();
         tiles.forEach(Tile::render);
         main.popMatrix();

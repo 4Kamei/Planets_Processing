@@ -167,11 +167,25 @@ public class Map {
     public boolean addNode(Node n) {
         if (assignedTiles.containsKey(n))
             return false;
+        float sizeSquaredProper = (float) n.getSize() + 1;
+        sizeSquaredProper *= sizeSquaredProper;
+        float sizeSquared = sizeSquaredProper * 0.75f -80;//TODO: TWEAK VALUES SO THAT THEY'RE NICE
         ArrayList<Tile> tiles = new ArrayList<>();
         Point2i position = n.getPoint();
+
+        int offX = position.getX()-4;
+        int offY = position.getY()-4;
+        int offXSq = offX * offX;
+        int offYSq = offY * offY;
         for (int x = (int) (position.getX() - n.getSize()); x < position.getX() + n.getSize(); x += 8)
             for (int y = (int) (position.getY() - n.getSize()); y < position.getY() + n.getSize(); y += 8)
-                tiles.add(new Tile(main, x / 8, y / 8));
+                //More efficient 'slightly' circle algorithm, (b-a)^2 = b*b- 2ab + b*b
+                if((x*x - 2 * x * offX + offXSq) + (y*y - 2* y * offY + offYSq) < sizeSquaredProper)
+                    if((x*x - 2 * x * offX + offXSq) + (y*y - 2 * y * offY + offYSq) < sizeSquared) {
+                        tiles.add(new Tile(main, x / 8, y / 8, Tile.INNER));
+                    }else{
+                        tiles.add(new Tile(main, x / 8, y / 8, Tile.OUTER));
+                    }
         if (!tiles.stream().anyMatch(t -> assignedTiles.values().stream().anyMatch(list -> list.contains(t)))){
             assignedTiles.put(n, tiles);
             return true;
